@@ -1,0 +1,12 @@
+.main {
+  padding: 56px 8px;
+  z-index: 2; }
+
+.main.top-- {
+  padding-top: 104px; }
+
+body {
+  color: #212121; }
+
+header.card {
+  width: 100%; }

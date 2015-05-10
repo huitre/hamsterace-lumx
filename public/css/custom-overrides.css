@@ -1,0 +1,10 @@
+body {
+  font-size: 12px; }
+
+.mui-tabs-container .mui-tab-item-container {
+  position: fixed;
+  z-index: 9;
+  margin-top: -15px; }
+
+.mui-tabs-container .mui-tab-template {
+  margin: 32px; }

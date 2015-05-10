@@ -1,0 +1,62 @@
+.me {
+  article {
+    margin: 5em auto 5em auto;
+  } 
+
+  .mui-app-bar {
+    background-color: #3F51B5;
+    top: 0;
+    height: $appbar-height;
+    position: fixed;
+    padding: 0;
+    width:88%;
+  }
+
+  .mui-app-bar h1 {
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 72px;
+    font-family: "RobotoDraft", "Roboto", sans-serif;
+    color: white;
+    margin-left: 48px;
+  }
+
+  .mui-toolbar .mui-toolbar-group.mui-right:last-child {
+    margin-right: 0;
+  }
+
+  nav { 
+    height: 64px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: baseline;
+    float: left;
+    width: 100%;
+  }
+  .mui-font-icon {
+    color: white;
+    fill: white;
+    height: 20px;
+    width: 24px;
+  }
+
+  .mui-left-nav {
+    width: 19em
+  }
+
+  #mainAction {
+    position: absolute;
+    right: 5%;
+    bottom: -26.5px;
+    z-index: 1;
+    padding: 0;
+  }
+  
+  #mainAction .mui-paper-container {
+     padding: 0;
+     margin: 0;
+   }
+
+   #mainAction .mui-app-bar-navigation-icon-button { float: none; }
+
+}

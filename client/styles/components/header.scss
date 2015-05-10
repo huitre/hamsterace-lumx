@@ -1,0 +1,49 @@
+
+// Header base styles
+header {
+  @include position(fixed !important, 0 0 null 0);
+  z-index: 4;
+  position: fixed !important;
+}
+
+
+// Main Nav
+.main-nav {
+  float: right;
+
+  ul {
+    @extend %bare-list;
+
+    li {
+      float: left;
+    }
+  }
+}
+
+.main-nav--lap-and-up {
+  @include media-query(palm) {
+    display: none;
+  }
+}
+
+.main-nav--palm {
+  @include media-query(lap-and-up) {
+    display: none;
+  }
+}
+
+  // Main Nav Link
+  .main-nav__link {
+    display: block;
+    padding: 0 $base-spacing-unit * 1.5;
+    border-radius: $base-round;
+    @include font-size(18px);
+    font-weight: 500;
+    color: white;
+    line-height: 36px;
+    text-decoration: none;
+
+    @include media-query(lap) {
+      @include font-size(14px);
+    }
+  }
