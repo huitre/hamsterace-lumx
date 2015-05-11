@@ -39022,8 +39022,8 @@ var Config = {
     url: "http://localhost:4242/"
   }
 };
-angular.module('Hamsterace.Services', [])
-angular.module('Hamsterace.Components', [])
+angular.module('Hamsterace.Services', []);
+angular.module('Hamsterace.Components', []);
 
 angular.module('Hamsterace', [
   'lumx',
@@ -39048,6 +39048,21 @@ exports.directive = function() {
   };
 };
 */
+
+angular.module('Hamsterace').directive('hraOverflow', ['$document', 
+  function($document) {
+    function link (scope, element, attrs) {
+      element.css({
+       overflowY: 'auto',
+       maxHeight: window.innerHeight - element.offset().top,
+       display: 'block'
+      })
+    }
+    return {
+      link: link
+    }
+  }
+])
 
 angular.module('Hamsterace.Services').factory('AuthenticationService',
   ['$cookieStore', '$http', '$rootScope', 'Base64',
@@ -39258,7 +39273,7 @@ function ($scope, $rootScope, $location, Sidebar) {
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-10 19:48:50
+* @Last Modified time: 2015-05-11 21:56:48
 */
 
 'use strict';
@@ -39268,6 +39283,10 @@ angular.module('Hamsterace').controller('RankingController',
 function ($scope, $rootScope, $location, $translate, Sidebar) {
   $scope.SideBar = Sidebar;
   $scope.title = 'appbar.ranking';
+  $scope.rankingChoice = [
+      {value : 'toto'},
+      {value : 'toto1'},
+  ];
 
 }])
 angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $urlRouterProvider) {
@@ -39315,6 +39334,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.validate': 'Validate',
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
+    'ui.ranking.type' : 'toto',
     'appbar.ranking': 'Ranking'
   });
  
@@ -39322,6 +39342,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.validate': 'Valider',
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
+    'ui.ranking.type' : 'toto',
     'appbar.ranking': 'Classements'
   });
  

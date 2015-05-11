@@ -43,6 +43,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.validate': 'Validate',
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
+    'ui.ranking.type' : 'toto',
     'appbar.ranking': 'Ranking'
   });
  
@@ -50,6 +51,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.validate': 'Valider',
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
+    'ui.ranking.type' : 'toto',
     'appbar.ranking': 'Classements'
   });
  

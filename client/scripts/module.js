@@ -1,5 +1,5 @@
-angular.module('Hamsterace.Services', [])
-angular.module('Hamsterace.Components', [])
+angular.module('Hamsterace.Services', []);
+angular.module('Hamsterace.Components', []);
 
 angular.module('Hamsterace', [
   'lumx',
