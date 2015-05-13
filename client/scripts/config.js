@@ -1,5 +1,5 @@
 var Config = {
   api : {
-    url: "http://localhost:4242/"
+    url: "http://api.hamsterace.com/"
   }
 };

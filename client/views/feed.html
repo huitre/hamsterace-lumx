@@ -1,0 +1,33 @@
+<ng-include src="'views/appbar.html'"></ng-include>
+<ng-include src="'views/sidebar.html'"></ng-include>
+<div flex-container="row" flex-gutter="24" class="main top-- feed">
+    <div flex-item ng-repeat="post in feed" >
+        <!--<div class="card">-->
+	        <ul class="list mt++ card">
+	            <li class="list-row list-row--multi-line list-row--has-separator">
+	                <div class="list-row__primary">
+	                    <div class="img-round" style="background-image: url(http://www.google.fr/url?source=imglanding&ct=img&q=http://www.thehindu.com/multimedia/dynamic/01488/VBK-NADAL_1488114f.jpg&sa=X&ei=JlJTVYnTOILjUcX1gMgI&ved=0CAkQ8wc&usg=AFQjCNEEXSl1lcANS4cQeZNcWaLLxO1T1w)"/>
+	                </div>
+
+	                <div class="list-row__content">
+	                    <span class="display-block">{{post.Person.PersonDetails[0].firstname}} {{post.Person.PersonDetails[0].name}}</span>
+	                    <span class="display-block">{{post.createdAt}}</span>
+	                    <span class="display-block fs-body-1 tc-black-2">{{post.content.text}}</span>
+	                    <span ng-show="post.content.video.length">
+                    		<embed-video>
+                				{{post.content.video}}
+                			</embed-video>
+                    	</span>
+                    	<div class="list-row__content list-row__comments" ng-show="post.Comments.length">
+                			{{post.Comments}}
+            			</div>
+	                </div>
+	                
+	                <div class="list-row__secondary">
+	                    <i class="icon icon--xs icon--grey icon--flat mdi mdi-information"></i>
+	                </div>
+	            </li>
+	        </ul>
+        </div>
+    </div>
+</div>
