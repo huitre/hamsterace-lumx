@@ -18,6 +18,12 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
         controller: 'MeController'
     });
 
+    $stateProvider.state('feed', {
+        url: "/feed",
+        templateUrl: 'views/feed.html',
+        controller: 'FeedController'
+    });
+
     $stateProvider.state('ranking', {
         url: "/classement",
         templateUrl: 'views/ranking.html',
@@ -44,7 +50,8 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
     'ui.ranking.type' : 'toto',
-    'appbar.ranking': 'Ranking'
+    'appbar.ranking': 'Ranking',
+    'appbar.feed': 'Feed'
   });
  
   $translateProvider.translations('fr', {
@@ -52,7 +59,8 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
     'ui.ranking.type' : 'toto',
-    'appbar.ranking': 'Classements'
+    'appbar.ranking': 'Classements',
+    'appbar.feed': 'Actus'
   });
  
   $translateProvider.preferredLanguage('fr');

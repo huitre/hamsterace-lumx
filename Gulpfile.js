@@ -82,6 +82,30 @@ gulp.task('views', function() {
   
 });
 
+gulp.task('watch-prod', ['lint'], function() {
+  // Start live reload server
+  refresh.listen();
+
+  // Watch our scripts, and when they change run lint and browserify
+  gulp.watch(['client/scripts/*.js', 'client/scripts/**/*.js'],[
+    'lint',
+    'contact-js'
+  ]);
+
+  // Watch our sass files
+  gulp.watch(['client/styles/**/*.scss'], [
+    'styles'
+  ]);
+
+  // Watch view files
+  gulp.watch(['client/**/*.html'], [
+    'views'
+  ]);
+
+  gulp.watch('./public/**').on('change', refresh.changed);
+
+});
+
 gulp.task('watch', ['serve', 'lint'], function() {
   // Start live reload server
   refresh.listen();
@@ -111,7 +135,7 @@ gulp.task('contact-js', function () {
   gulp.src([
     // dependencies
     'bower_components/jquery/dist/jquery.min.js',
-    'bower_components/angular/angular.js',
+    'bower_components/angular/angular.min.js',
     'bower_components/angular-translate/angular-translate.min.js',
     'bower_components/angular-ui-router/release/angular-ui-router.min.js',
     'bower_components/angular-cookies/angular-cookies.min.js',
@@ -141,3 +165,6 @@ gulp.task('fonts', function () {
 })
 
 gulp.task('default', ['dev']);
+
+// Dev task
+gulp.task('prod', ['views', 'styles', 'lint', 'browserify', 'watch-prod', 'contact-js', 'fonts'], function() {});
