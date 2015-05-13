@@ -1,0 +1,17 @@
+<hra-overflow>
+<div flex-item>
+        <lx-select 
+          ng-model="selects.selectedPerson" 
+          placeholder="Choose" 
+          choices="rankingChoice">
+            <lx-select-selected>
+                {{ $selected.value }}
+            </lx-select-selected>
+
+            <lx-select-choices>
+                {{ $choice.value }}
+            </lx-select-choices>
+        </lx-select>
+    </div>
+</div>
+</hra-overflow>
