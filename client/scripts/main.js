@@ -1,9 +1,5 @@
 angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $urlRouterProvider) {
-    /*$urlRouterProvider.html5Mode({
-        enabled: true,
-        requireBase: false
-    });*/
-    $httpProvider.defaults.useXDomain = true;
+    
     $httpProvider.defaults.withCredentials = true;
 
     $stateProvider.state('home', {

@@ -12962,7 +12962,8 @@ angular.module("lumx.progress").run(['$templateCache', function(a) { a.put('prog
 	 }]);
 var Config = {
   api : {
-    url: "http://api.hamsterace.com/"
+    //url: "http://api.hamsterace.com/"
+    url : "http://localhost:4242/"
   }
 };
 angular.module('Hamsterace.Services', []);
@@ -12980,6 +12981,16 @@ angular.module('Hamsterace', [
   ]
 );
 angular.module('Hamsterace.Directives').directive(
+'datetolocale', [
+function (element, attrs) {
+    
+    return {
+        link: function (scope, element, attrs) {
+            element.innerHTML = '<video src="' + element.innerText + '"/>';
+        }
+    }
+}]);
+angular.module('Hamsterace.Directives').directive(
 'embedVideo', [
 function (element, attrs) {
     
@@ -12989,6 +13000,35 @@ function (element, attrs) {
         }
     }
 }]);
+'use strict';
+/*
+exports.inject = function(app) {
+  app.directive('exampleDirective', exports.directive);
+  return exports.directive;
+};
+
+exports.directive = function() {
+  return {
+    restrict: 'E',
+    template: '<ul><li><em>A simple list</em></li><li><em>But I can be anything you want.</em></li></ul>'
+  };
+};
+*/
+
+angular.module('Hamsterace').directive('hraOverflow', ['$document', 
+  function($document) {
+    function link (scope, element, attrs) {
+      element.css({
+       overflowY: 'auto',
+       height: window.innerHeight - element.offset().top,
+       display: 'block'
+      })
+    }
+    return {
+      link: link
+    }
+  }
+])
 
 angular.module('Hamsterace.Services').factory('AuthenticationService',
   ['$cookieStore', '$http', '$rootScope', 'Base64',
@@ -13128,19 +13168,37 @@ angular.module('Hamsterace.Services').factory('FeedService',
 function ($cookieStore, $http, $rootScope) {
 	var _urls = {
 	  feed: Config.api.url + 'me/feed',
-	  signup: Config.api.url + 'signup'
+	  comment: Config.api.url + 'me/feed/comment/'
 	}, self = {}
 
 	self.getFeed = function (callback) {
-		return $http.get(_urls.feed)/*.then(function (res) {
-          res.success = true;
-          callback(res);
-        }, function (e) {
-          callback({success: false, message: e})
-        });*/
+		return $http.get(_urls.feed)
 	}
 
+  self.comment = function (id, value, $scope) {
+    return $http.post(_urls.comment + id, {content : value})
+  }
 	return self;
+}]);
+/* 
+* @Author: huitre
+* @Date:   2015-05-10 19:41:04
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-05-13 23:06:09
+*/
+
+angular.module('Hamsterace.Services').factory('RankingService',
+['$http', '$rootScope',
+function ($http, $rootScope) {
+  var _urls = {
+    ranking: Config.api.url + 'ranking/',
+  }, self = {}
+
+  self.getRanking = function (url) {
+    return $http.get(_urls.ranking + url)
+  }
+
+  return self;
 }]);
 angular.module('Hamsterace.Components').service(
 'Sidebar', [
@@ -13159,16 +13217,38 @@ function() {
     };
 }]);
 angular.module('Hamsterace').controller('FeedController',
-['$scope', '$rootScope', '$location', 'Sidebar', 'FeedService', '$http',
-function ($scope, $rootScope, $location, Sidebar, FeedService, $http) {
-  	$scope.SideBar = Sidebar;
-  	$scope.title = 'appbar.feed';
+['$scope', '$rootScope', '$location', 'Sidebar', 'FeedService', '$http', '$timeout',
+function ($scope, $rootScope, $location, Sidebar, FeedService, $http, $timeout) {
+	$scope.SideBar = Sidebar;
+	$scope.title = 'appbar.feed';
 	$scope.dataLoading = true;
 	$scope.feed = [];
-	FeedService.getFeed().success(function(response) {
+	
+  FeedService.getFeed().success(function(response) {
 	    $scope.dataLoading = false;
 	    $scope.feed = response.feed;
 	});
+
+  $scope.onCommentSubmit = function () {
+    // $this contains the current form element of feed.html
+    var $this = this;
+    if ($this.post.id > 0 && $this.reply.length) {
+      $scope.dataLoading = true;
+      FeedService.comment($this.post.id, $this.reply).success(function (post) {
+        $scope.dataLoading = false;
+        $timeout(function () {
+          $scope.$apply(function () {
+            for (var i in $scope.feed) {
+              if ($scope.feed[i].id == post.PostId) {
+                $scope.feed[i].Comments.push(post);
+                $this.reply = '';
+              }
+            }
+          })
+        }, 0)
+      });
+    }
+  }
 }]);
 /* 
 * @Author: huitre
@@ -13187,7 +13267,7 @@ angular.module('Hamsterace').controller(['HomeController',
 * @Author: huitre
 * @Date:   2015-05-09 16:57:33
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-10 12:35:53
+* @Last Modified time: 2015-05-14 16:27:31
 */
 
 
@@ -13231,28 +13311,40 @@ function ($scope, $rootScope, $location, Sidebar) {
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-11 21:56:48
+* @Last Modified time: 2015-05-13 23:08:33
 */
 
 'use strict';
 
 angular.module('Hamsterace').controller('RankingController',
-['$scope', '$rootScope', '$location', '$translate', 'Sidebar',
-function ($scope, $rootScope, $location, $translate, Sidebar) {
+['$scope', '$rootScope', '$location', '$translate', 'Sidebar', 'RankingService',
+function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
   $scope.SideBar = Sidebar;
   $scope.title = 'appbar.ranking';
+
   $scope.rankingChoice = [
-      {value : 'toto'},
-      {value : 'toto1'},
+      { url: 'friends', text: 'Le plus loin' },
+      { url: 'friends/max', text: 'Le plus endurant' },
+      { url: 'friends/average', text: 'Le plus regulier' },
+      { url: 'friends/activity', text: 'Le sur-excite !' },
   ];
+
+
+  $scope.cbSelect = {
+    exec: function(newVal, oldVal) {
+      console.log(newVal);
+      $scope.dataLoading = true;
+      RankingService.getRanking(newVal.newValue.url).success(function(response) {
+        $scope.dataLoading = false;
+        $scope.ranking = response.ranking;
+      });
+    }
+  };
+
 
 }])
 angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $urlRouterProvider) {
-    /*$urlRouterProvider.html5Mode({
-        enabled: true,
-        requireBase: false
-    });*/
-    $httpProvider.defaults.useXDomain = true;
+    
     $httpProvider.defaults.withCredentials = true;
 
     $stateProvider.state('home', {

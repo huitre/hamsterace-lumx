@@ -18,7 +18,7 @@ angular.module('Hamsterace').directive('hraOverflow', ['$document',
     function link (scope, element, attrs) {
       element.css({
        overflowY: 'auto',
-       maxHeight: window.innerHeight - element.offset().top,
+       height: window.innerHeight - element.offset().top,
        display: 'block'
       })
     }

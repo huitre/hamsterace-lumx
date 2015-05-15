@@ -4,17 +4,15 @@ angular.module('Hamsterace.Services').factory('FeedService',
 function ($cookieStore, $http, $rootScope) {
 	var _urls = {
 	  feed: Config.api.url + 'me/feed',
-	  signup: Config.api.url + 'signup'
+	  comment: Config.api.url + 'me/feed/comment/'
 	}, self = {}
 
 	self.getFeed = function (callback) {
-		return $http.get(_urls.feed)/*.then(function (res) {
-          res.success = true;
-          callback(res);
-        }, function (e) {
-          callback({success: false, message: e})
-        });*/
+		return $http.get(_urls.feed)
 	}
 
+  self.comment = function (id, value, $scope) {
+    return $http.post(_urls.comment + id, {content : value})
+  }
 	return self;
 }]);

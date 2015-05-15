@@ -1,17 +1,18 @@
 <hra-overflow>
-<div flex-item>
-        <lx-select 
-          ng-model="selects.selectedPerson" 
-          placeholder="Choose" 
-          choices="rankingChoice">
-            <lx-select-selected>
-                {{ $selected.value }}
-            </lx-select-selected>
+  <div flex-item>
+    <lx-select 
+      ng-model="selects.selectedPerson" 
+      placeholder="Choose" 
+      change="cbSelect.exec(newValue, oldValue)"
+      choices="rankingChoice">
+        <lx-select-selected>
+            {{ $selected.text }}
+        </lx-select-selected>
 
-            <lx-select-choices>
-                {{ $choice.value }}
-            </lx-select-choices>
-        </lx-select>
+        <lx-select-choices>
+            {{ $choice.text }}
+        </lx-select-choices>
+    </lx-select>
     </div>
 </div>
 </hra-overflow>
