@@ -13,6 +13,26 @@
             {{ $choice.text }}
         </lx-select-choices>
     </lx-select>
-    </div>
+  </div>
+<div flex-container="row" flex-gutter="24" class="main feed">
+  <div flex-item ng-repeat="rank in ranking" >
+    <ul class="list mt++ card">
+      <li class="list-row list-row--multi-line list-row--has-separator">
+        <div class="list-row__primary">
+            <div class="img-round" style="background-image: url(http://www.google.fr/url?source=imglanding&ct=img&q=http://www.thehindu.com/multimedia/dynamic/01488/VBK-NADAL_1488114f.jpg&sa=X&ei=JlJTVYnTOILjUcX1gMgI&ved=0CAkQ8wc&usg=AFQjCNEEXSl1lcANS4cQeZNcWaLLxO1T1w)"></div>
+        </div>
+
+        <div class="list-row__content">
+            <span class="display-block rank">1er</span>
+            <span class="fs-body-1 display-block">{{rank.friend.firstname}} {{rank.friend.name}}</span>
+            <span class="display-block fs-body-1 tc-black-2">{{rank.summary.max}}</span>
+        </div>
+
+         <div class="list-row__secondary">
+              <i class="icon icon--xs icon--grey icon--flat mdi mdi-information"></i>
+          </div>
+      </li>
+    </ul>
+  </div>
 </div>
 </hra-overflow>

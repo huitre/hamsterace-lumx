@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-13 23:08:33
+* @Last Modified time: 2015-05-15 14:47:08
 */
 
 'use strict';
@@ -12,6 +12,7 @@ angular.module('Hamsterace').controller('RankingController',
 function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
   $scope.SideBar = Sidebar;
   $scope.title = 'appbar.ranking';
+  $scope.ranking = [];
 
   $scope.rankingChoice = [
       { url: 'friends', text: 'Le plus loin' },
@@ -21,13 +22,15 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
   ];
 
 
+  console.log($scope.ranking);
+  
   $scope.cbSelect = {
     exec: function(newVal, oldVal) {
-      console.log(newVal);
       $scope.dataLoading = true;
-      RankingService.getRanking(newVal.newValue.url).success(function(response) {
+      RankingService.getRanking(newVal.newValue.url).success(function(ranking) {
         $scope.dataLoading = false;
-        $scope.ranking = response.ranking;
+        $scope.ranking = ranking;
+        console.log($scope.ranking);
       });
     }
   };
