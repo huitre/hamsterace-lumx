@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-15 14:47:08
+* @Last Modified time: 2015-05-17 22:31:37
 */
 
 'use strict';
@@ -27,10 +27,9 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
   $scope.cbSelect = {
     exec: function(newVal, oldVal) {
       $scope.dataLoading = true;
-      RankingService.getRanking(newVal.newValue.url).success(function(ranking) {
+      RankingService.getRanking(newVal.newValue.url).then(function(ranking) {
         $scope.dataLoading = false;
         $scope.ranking = ranking;
-        console.log($scope.ranking);
       });
     }
   };

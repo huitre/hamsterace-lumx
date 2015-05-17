@@ -25,7 +25,7 @@
         <div class="list-row__content">
             <span class="display-block rank">1er</span>
             <span class="fs-body-1 display-block">{{rank.friend.firstname}} {{rank.friend.name}}</span>
-            <span class="display-block fs-body-1 tc-black-2">{{rank.summary.max}}</span>
+            <span ng-repeat="value in rank.ranking" class="display-block fs-body-1 tc-black-2">{{value}}</span>
         </div>
 
          <div class="list-row__secondary">
