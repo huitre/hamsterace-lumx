@@ -9,21 +9,34 @@
   display: inline-block;
 }
 
-.rank-0 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #ffab40;
+.rank-content img {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .rank-1 {
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: bold;
+  color: #FFE525;
 }
 
 .rank-2 {
+  font-size: 1.7em;
+  font-weight: bold;
+  color: #CBD7F6;
+}
+
+.rank-3 {
   font-size: 1.3em;
   font-weight: bold;
+  color: #A35725;
 }
+
+.rank-4 {
+  font-weight: 400;
+  font-size: 1.2em;
+}
+
 
 
 .classement .content:first-child {

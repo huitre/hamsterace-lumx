@@ -45,9 +45,19 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.validate': 'Validate',
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
-    'ui.ranking.type' : 'toto',
+    'ui.ranking.type': 'toto',
+    'ui.feed': 'News feed',
+    'ui.feed.text.reply': 'Comment',
     'appbar.ranking': 'Ranking',
-    'appbar.feed': 'Feed'
+    'appbar.feed': 'Feed',
+    'ranking.summary': 'Distance',
+    'ranking.max': 'Max',
+    'ranking.average': 'Moyenne',
+    'ranking.activity': 'Activité',
+    'ranking.rank.1': 'st',
+    'ranking.rank.2': 'nd',
+    'ranking.rank.3': 'rd',
+    'ranking.rank.4': 'th'
   });
  
   $translateProvider.translations('fr', {
@@ -55,8 +65,18 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
     'ui.ranking.type' : 'toto',
+    'ui.feed': 'Vos actus !',
+    'ui.feed.text.reply': 'Commentez...',
     'appbar.ranking': 'Classements',
-    'appbar.feed': 'Actus'
+    'appbar.feed': 'Actus',
+    'ranking.summary': 'Distance',
+    'ranking.max': 'Max',
+    'ranking.average': 'Moyenne',
+    'ranking.activity': 'Activité',
+    'ranking.rank.1': 'er',
+    'ranking.rank.2': 'eme',
+    'ranking.rank.3': 'eme',
+    'ranking.rank.4': 'eme'
   });
  
   $translateProvider.preferredLanguage('fr');

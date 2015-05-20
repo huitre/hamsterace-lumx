@@ -2,12 +2,12 @@
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-17 22:31:26
+* @Last Modified time: 2015-05-20 22:01:47
 */
 
 angular.module('Hamsterace.Services').factory('RankingService',
-['$http', '$rootScope', '$q',
-function ($http, $rootScope, $q) {
+['$http', '$rootScope', '$q', '$translate',
+function ($http, $rootScope, $q, $translate) {
   var _urls = {
     ranking: Config.api.url + 'ranking/',
   }, self = {}
@@ -44,22 +44,31 @@ function ($http, $rootScope, $q) {
      return $q(function(resolve, reject) {
         $http.get(_urls.ranking + url).then(function (ranking) {
           var order = getOrder(url.substr(url.lastIndexOf('/'))),
-              data = {};
+              data = {}, p = 1;
 
           ranking.data.map(function (ranking, index) {
-            var rank = [];
+            var rank = [], k;
             data[index] = {};
             for (var i in order) {
               for (var j in order[i]) {
                 if (i == 'summary') {
-                  rank.push(toKm(ranking[i][order[i][j]]));
+                  rank.push({
+                    text: $translate.instant('ranking.' + i), 
+                    value : toKm(ranking[i][order[i][j]]) 
+                  });
                 } else {
-                  rank.push(Math.round(ranking[i][order[i][j]]*100)/100 + '%');
+                  rank.push({
+                    text: $translate.instant('ranking.' + i), 
+                    value: Math.round(ranking[i][order[i][j]]*100)/100 + '%'
+                  })
                 }
               }
             }
+            k = p > 3 ? 4 : p;
+            data[index].pos = { text: $translate.instant('ranking.rank.' + k), value : p, css : k };
             data[index].ranking = rank;
             data[index].friend = ranking.friend;
+            p += 1;
           })
           resolve(data);
         }, function (err) { reject(err) });

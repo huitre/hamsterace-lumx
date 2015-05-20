@@ -23,9 +23,14 @@
         </div>
 
         <div class="list-row__content">
-            <span class="display-block rank">1er</span>
-            <span class="fs-body-1 display-block">{{rank.friend.firstname}} {{rank.friend.name}}</span>
-            <span ng-repeat="value in rank.ranking" class="display-block fs-body-1 tc-black-2">{{value}}</span>
+            <span class="fs-title display-block">{{rank.friend.firstname}} {{rank.friend.name}}</span>
+            <span class="display-block rank-{{rank.pos.css}} rank-content">
+              <span>
+                <img src="img/rank-{{rank.pos.css}}.png" with="24" height="24" class="fs-body"/>
+              </span>
+              <span>{{rank.pos.value}}{{rank.pos.text}}</span>
+            </span>
+            <span ng-repeat="content in rank.ranking" class="fs-body-1 tc-black-2">{{content.text}} {{content.value}}</span>
         </div>
 
          <div class="list-row__secondary">
