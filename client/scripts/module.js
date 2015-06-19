@@ -1,3 +1,4 @@
+angular.module('Hamsterace.Filters', []);
 angular.module('Hamsterace.Services', []);
 angular.module('Hamsterace.Components', []);
 angular.module('Hamsterace.Directives', []);
@@ -9,6 +10,7 @@ angular.module('Hamsterace', [
   'pascalprecht.translate',
   'Hamsterace.Services',
   'Hamsterace.Components',
-  'Hamsterace.Directives'
+  'Hamsterace.Directives',
+  'Hamsterace.Filters'
   ]
 );

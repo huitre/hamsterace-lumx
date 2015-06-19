@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-20 22:01:47
+* @Last Modified time: 2015-06-13 10:19:55
 */
 
 angular.module('Hamsterace.Services').factory('RankingService',
@@ -53,7 +53,7 @@ function ($http, $rootScope, $q, $translate) {
               for (var j in order[i]) {
                 if (i == 'summary') {
                   rank.push({
-                    text: $translate.instant('ranking.' + i), 
+                    text: $translate.instant('ranking.' + order[i][j]), 
                     value : toKm(ranking[i][order[i][j]]) 
                   });
                 } else {
@@ -67,9 +67,10 @@ function ($http, $rootScope, $q, $translate) {
             k = p > 3 ? 4 : p;
             data[index].pos = { text: $translate.instant('ranking.rank.' + k), value : p, css : k };
             data[index].ranking = rank;
-            data[index].friend = ranking.friend;
+            data[index].friend = ranking.friend || ranking.person;
             p += 1;
           })
+          console.log(data);
           resolve(data);
         }, function (err) { reject(err) });
     });

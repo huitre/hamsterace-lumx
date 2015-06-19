@@ -8,11 +8,21 @@
 .main.top-- {
   padding-top: 104px; }
 
-.main.top-- {
+div.top--, .main.top-- {
   padding-top: 64px; }
+
+.top- {
+  padding-top: 56px; }
 
 body {
   color: #212121; }
 
 header.card {
   width: 100%; }
+
+.inline-block {
+  display: inline-block;
+  margin: auto; }
+
+.btn.btn--margin {
+  margin-right: 4px; }

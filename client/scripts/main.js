@@ -26,6 +26,7 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
         controller: 'RankingController'
     });
 
+
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
@@ -50,7 +51,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.feed.text.reply': 'Comment',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
-    'ranking.summary': 'Distance',
+    'ranking.sum': 'Total',
     'ranking.max': 'Max',
     'ranking.average': 'Moyenne',
     'ranking.activity': 'Activité',
@@ -69,7 +70,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.feed.text.reply': 'Commentez...',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
-    'ranking.summary': 'Distance',
+    'ranking.sum': 'Total',
     'ranking.max': 'Max',
     'ranking.average': 'Moyenne',
     'ranking.activity': 'Activité',

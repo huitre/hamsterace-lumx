@@ -146,6 +146,7 @@ gulp.task('contact-js', function () {
     './client/scripts/config.js',
     './client/scripts/module.js',
     './client/scripts/directives/**/*.js',
+    './client/scripts/filters/**/*.js',
     './client/scripts/services/**/*.js',
     './client/scripts/controllers/**/*.js',
     './client/scripts/main.js'

@@ -5959,6 +5959,14 @@ header {
   .sidebar-menu__link:hover {
     background-color: #eee; }
 
+.d3b {
+  fill: #2196f3; }
+
+.chart {
+  margin-top: 24px;
+  margin-left: -16px;
+  margin-right: -16px; }
+
 #home {
   /*
   input {
@@ -6093,6 +6101,11 @@ header {
 .me #mainAction .mui-app-bar-navigation-icon-button {
   float: none; }
 
+#donught text {
+  font-size: 4em;
+  fill: #818181;
+  text-shadow: 1px 1px #0F0F0F; }
+
 /*
  * Charts styling
  */
@@ -6139,6 +6152,9 @@ header {
   font-weight: 400;
   font-size: 1.2em; }
 
+.ranking-content:nth-child(4n-1) {
+  font-size: large; }
+
 .classement .content:first-child {
   font-weight: bold; }
 
@@ -6181,14 +6197,24 @@ header {
 .main.top-- {
   padding-top: 104px; }
 
-.main.top-- {
+div.top--, .main.top-- {
   padding-top: 64px; }
+
+.top- {
+  padding-top: 56px; }
 
 body {
   color: #212121; }
 
 header.card {
   width: 100%; }
+
+.inline-block {
+  display: inline-block;
+  margin: auto; }
+
+.btn.btn--margin {
+  margin-right: 4px; }
 
 @media screen and (max-width: 6in) {
   section#content section {

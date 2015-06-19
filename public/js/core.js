@@ -12966,6 +12966,7 @@ var Config = {
     url : "http://localhost:4242/"
   }
 };
+angular.module('Hamsterace.Filters', []);
 angular.module('Hamsterace.Services', []);
 angular.module('Hamsterace.Components', []);
 angular.module('Hamsterace.Directives', []);
@@ -12977,9 +12978,170 @@ angular.module('Hamsterace', [
   'pascalprecht.translate',
   'Hamsterace.Services',
   'Hamsterace.Components',
-  'Hamsterace.Directives'
+  'Hamsterace.Directives',
+  'Hamsterace.Filters'
   ]
 );
+angular.module('Hamsterace.Directives', []).directive(
+'bars', [
+function ($parse) {
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div class="chart"></div>',
+    scope: {
+      bar: '=data'
+    },
+    link: function (scope, element, attrs) {
+      var domain = { x : 0, y : 0}, max, min,
+          svg, focus, context,
+          xAxis, yAxis,
+          ow = element.width(), oh = element.height() || 300, eh = oh + 90,
+          margin = {left: 8, top: 8, right: 8, bottom: 8},
+          barWidth = 5,
+          delta = 0;
+      scope.$watch(attrs.data, function (newValue, oldValue) {    
+        var data = newValue, chart;
+        svg = d3.select(element[0])
+        if (!data) 
+          return;
+        // domain
+        min = d3.min(data, function (d) { return new Date(d.createdAt) }),
+        max = d3.max(data, function (d) { return new Date(d.createdAt) })
+        domain.x = [min, max];
+
+        min = d3.min(data, function (d) { return d.content });
+        max = d3.max(data, function (d) { return d.content });
+        domain.y = [0, max];
+        
+        if (svg.select('svg')[0][0] == null) {
+          // drawing elements
+          svg = svg.append('svg')
+            .attr('class', 'd3')
+            .attr('width', ow - margin.left - margin.right)
+            .attr('height', eh)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          focus = svg.append("g")
+            .attr("class", "focus")
+            .attr('width', ow - margin.left - margin.right)
+            .attr('height', eh)
+            .attr("transform", "translate(" + 40 + "," + margin.top + ")");
+
+          focus.append('g').attr('class', 'x axis')
+          focus.append('g').attr('class', 'y axis')
+
+        } else {
+          focus = svg.select('.focus');
+          svg.select('svg').attr('height', oh + 90);
+          focus.attr('height', oh + 90)
+        }
+
+
+        // scales
+        var x, x2, y, y2;
+
+        x = d3.time.scale()
+          .domain(domain.x)
+          .rangeRound([margin.left, ow - margin.right -margin.left]);
+
+        y = d3.scale.linear()
+          .domain(domain.y)
+          .rangeRound([oh - margin.top -margin.bottom, -margin.bottom]);
+
+
+        // axxis
+        xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom")
+
+        yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left");
+        focus.select('.x.axis').attr('transform', 'translate(0,' + (oh - margin.bottom) + ')')
+          .call(xAxis).selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)" );
+        focus.select('.y.axis').attr('transform', 'translate(' + (margin.left) + ',' + (margin.top) + ')').call(yAxis);
+
+        // bar
+        focus = focus.selectAll('.d3b').remove().data([]).data(data);
+        focus.enter().append("rect")
+          .attr("x", function(d) { return x(new Date(d.createdAt)); })
+          .attr("y", function(d) { return y(d.content); })
+          .attr("height", function(d) { return oh - margin.top - y(d.content); })
+          .attr("width", barWidth - 2)
+          .attr('class', 'd3b')
+        focus.exit();
+      });
+    } 
+  };
+}]);
+angular.module('Hamsterace.Directives').directive(
+'donught', [
+function ($parse) {
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div id="donught"></div>',
+    scope: {
+      activity: '=percent'
+    },
+    link: function (scope, element, attrs) {
+      scope.$watch(attrs.percent, function (newValue, oldValue) {        
+        if (newValue) {
+          var data = [], 
+              chart,
+              width = element.width(),
+              height = 300,
+              radius = Math.min(width, height) / 1.7,
+              color, pie, arc, svg, background, path;
+
+          data = [100 - scope.activity, scope.activity];
+
+          color = d3.scale.category20();
+
+          pie = d3.layout.pie()
+              .sort(null);
+
+          arc = d3.svg.arc()
+              .innerRadius(radius - 80)
+              .outerRadius(radius - 50)
+              .cornerRadius(50)
+              
+          if (d3.select('svg')[0][0] == null) {
+            svg = d3.select(element[0]).append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            background = svg.append("path")
+                .data(pie([100]))
+                .style("fill", "rgb(215, 215, 215)")
+                .attr("d", arc)
+
+            svg.append("text").text(Math.round(scope.activity) + ' %')
+              .attr("text-anchor", "middle")
+              .attr("dy",15)
+              .attr("dx",2);
+          } else {
+            svg = d3.select('svg');
+          }
+          
+          path = svg.selectAll("path")
+              .data(pie(data))
+            .enter().append("path")
+              .attr("fill", function(d, i) { return '#2196F3'/*color(i);*/ })
+              .attr("d", arc)
+
+              
+        }
+      });
+    } 
+  };
+}]);
 angular.module('Hamsterace.Directives').directive(
 'datetolocale', [
 function (element, attrs) {
@@ -13001,19 +13163,6 @@ function (element, attrs) {
     }
 }]);
 'use strict';
-/*
-exports.inject = function(app) {
-  app.directive('exampleDirective', exports.directive);
-  return exports.directive;
-};
-
-exports.directive = function() {
-  return {
-    restrict: 'E',
-    template: '<ul><li><em>A simple list</em></li><li><em>But I can be anything you want.</em></li></ul>'
-  };
-};
-*/
 
 angular.module('Hamsterace').directive('hraOverflow', ['$document', 
   function($document) {
@@ -13029,6 +13178,30 @@ angular.module('Hamsterace').directive('hraOverflow', ['$document',
     }
   }
 ])
+angular.module('Hamsterace.Filters').filter('orderObjectBy', function(){
+ return function(input, attribute) {
+    if (!angular.isObject(input)) return input;
+
+    var array = [];
+    for(var objectKey in input) {
+        array.push(input[objectKey]);
+    }
+
+    array.sort(function(a, b){
+      var filter = '';
+      if (attribute.indexOf('.')) {
+        filter = attribute.split('.')
+        for (var i in filter) { 
+          a = a[filter[i]];
+          b = b[filter[i]];
+        }
+      }
+      return parseInt(a) - parseInt(b);
+    });
+    return array;
+ }
+});
+
 
 angular.module('Hamsterace.Services').factory('AuthenticationService',
   ['$cookieStore', '$http', '$rootScope', 'Base64',
@@ -13182,9 +13355,50 @@ function ($cookieStore, $http, $rootScope) {
 }]);
 /* 
 * @Author: huitre
+* @Date:   2015-06-12 18:30:03
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-19 20:20:42
+*/
+
+'use strict';
+
+angular.module('Hamsterace.Services').factory('MeService',
+['$cookieStore', '$http', '$rootScope',
+function ($cookieStore, $http, $rootScope) {
+  var _urls = {
+    me: Config.api.url + 'me/',
+    friends: Config.api.url + 'me/friends',
+    stats: Config.api.url + 'me/stats'
+  }, self = {}
+
+  self.getBasicProfil = function (callback) {
+    return $http.get(_urls.me).then(function (profil) {
+      return profil.data.PersonDetails[0];
+    })
+  }
+
+  self.getFriends = function (callback) {
+    return $http.get(_urls.friends).then(function (friends) {
+      return friends.data;
+    })
+  }
+
+  self.getStats = function (type, value, $scope) {
+    var url = _urls.stats;
+    if (type != null)
+      url = _urls.stats + '/' + type;
+
+    return $http.get(url).then(function (stats) {
+      return stats.data;
+    })
+  }
+  return self;
+}]);
+/* 
+* @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-20 22:01:47
+* @Last Modified time: 2015-06-13 10:19:55
 */
 
 angular.module('Hamsterace.Services').factory('RankingService',
@@ -13235,7 +13449,7 @@ function ($http, $rootScope, $q, $translate) {
               for (var j in order[i]) {
                 if (i == 'summary') {
                   rank.push({
-                    text: $translate.instant('ranking.' + i), 
+                    text: $translate.instant('ranking.' + order[i][j]), 
                     value : toKm(ranking[i][order[i][j]]) 
                   });
                 } else {
@@ -13249,9 +13463,10 @@ function ($http, $rootScope, $q, $translate) {
             k = p > 3 ? 4 : p;
             data[index].pos = { text: $translate.instant('ranking.rank.' + k), value : p, css : k };
             data[index].ranking = rank;
-            data[index].friend = ranking.friend;
+            data[index].friend = ranking.friend || ranking.person;
             p += 1;
           })
+          console.log(data);
           resolve(data);
         }, function (err) { reject(err) });
     });
@@ -13356,31 +13571,74 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-10 19:42:54
+* @Last Modified time: 2015-06-19 19:03:56
 */
 
 'use strict';
   
 angular.module('Hamsterace').controller('MeController',
-['$scope', '$rootScope', '$location', 'Sidebar',
-function ($scope, $rootScope, $location, Sidebar) {
+['$scope', '$rootScope', '$location', 'Sidebar', 'MeService',
+function ($scope, $rootScope, $location, Sidebar, MeService) {
+  var self = this;
+
+  // main template dependency
   $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+
+  // actions
+  this.getStats = function (type) {
+    MeService.getStats(type).then(function(stats) {
+      $scope.dataLoading = false;
+      $scope.stats = stats.stats;
+      if ($scope.stats) {
+        $scope.bar = $scope.stats.distance.data;
+        $scope.activity = $scope.stats.activity.percent;
+      }
+    })
+  }
+
+  this.getProfil = function () {
+    MeService.getBasicProfil().then(function(profil) {
+      MeService.getFriends().then(function (friends) {
+        $scope.dataLoading = false;
+        $scope.profil = profil;
+        $scope.friends = friends;
+      })
+    });
+  }
+
+  $scope.profil = $scope.profil || this.getProfil();;
+  
+  // other
+
+  // graphs
+  $scope.stats = $scope.stats || this.getStats();
+  $scope.bar = null;
+  $scope.activity = null;
+
+  $scope.changeGranulosity = function (type) {
+    $scope.stats = self.getStats(type);
+  }
+
 }])
 /* 
 * @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-05-20 22:51:46
+* @Last Modified time: 2015-06-13 10:54:06
 */
 
 'use strict';
 
 angular.module('Hamsterace').controller('RankingController',
-['$scope', '$rootScope', '$location', '$translate', 'Sidebar', 'RankingService',
-function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
+['$scope', '$rootScope', '$location', '$translate', 'Sidebar', 'RankingService', 'orderObjectByFilter',
+function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, orderObjectByFilter) {
   $scope.SideBar = Sidebar;
   $scope.title = 'appbar.ranking';
   $scope.ranking = [];
+  $scope.rankingAll = [];
+  $scope.selectedPersons = ['toto'];
 
   $scope.rankingFriendsChoice = [
       { url: 'friends', text: 'Le plus loin' },
@@ -13397,14 +13655,24 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService) {
   ];
 
 
-  console.log($scope.ranking);
-  
   $scope.cbSelect = {
     exec: function(newVal, oldVal) {
       $scope.dataLoading = true;
       RankingService.getRanking(newVal.newValue.url).then(function(ranking) {
         $scope.dataLoading = false;
         $scope.ranking = ranking;
+        $scope.selected = newVal;
+      });
+    }
+  };
+
+  $scope.cbSelect2 = {
+    exec: function(newVal, oldVal) {
+      $scope.dataLoading = true;
+      RankingService.getRanking(newVal.newValue.url).then(function(ranking) {
+        $scope.dataLoading = false;
+        $scope.rankingAll = ranking;
+        console.log($scope.rankingAll);
       });
     }
   };
@@ -13439,6 +13707,7 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
         controller: 'RankingController'
     });
 
+
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
@@ -13463,7 +13732,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.feed.text.reply': 'Comment',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
-    'ranking.summary': 'Distance',
+    'ranking.sum': 'Total',
     'ranking.max': 'Max',
     'ranking.average': 'Moyenne',
     'ranking.activity': 'Activité',
@@ -13482,7 +13751,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.feed.text.reply': 'Commentez...',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
-    'ranking.summary': 'Distance',
+    'ranking.sum': 'Total',
     'ranking.max': 'Max',
     'ranking.average': 'Moyenne',
     'ranking.activity': 'Activité',
