@@ -1,6 +1,7 @@
 angular.module('Hamsterace.Directives', []).directive(
-'bars', [
-function ($parse) {
+'bars', 
+['StatsService',
+function (StatsService) {
   return {
     restrict: 'E',
     replace: true,
@@ -10,12 +11,13 @@ function ($parse) {
     },
     link: function (scope, element, attrs) {
       var domain = { x : 0, y : 0}, max, min,
-          svg, focus, context,
+          svg, focus, context, line,
           xAxis, yAxis,
           ow = element.width(), oh = element.height() || 300, eh = oh + 90,
           margin = {left: 8, top: 8, right: 8, bottom: 8},
           barWidth = 5,
           delta = 0;
+
       scope.$watch(attrs.data, function (newValue, oldValue) {    
         var data = newValue, chart;
         svg = d3.select(element[0])
@@ -69,10 +71,13 @@ function ($parse) {
         xAxis = d3.svg.axis()
           .scale(x)
           .orient("bottom")
+          .ticks(10)
 
         yAxis = d3.svg.axis()
           .scale(y)
-          .orient("left");
+          .orient("left")
+          .tickFormat(function (d) { return StatsService.contentToUnits(d) })
+
         focus.select('.x.axis').attr('transform', 'translate(0,' + (oh - margin.bottom) + ')')
           .call(xAxis).selectAll("text")
             .style("text-anchor", "end")
@@ -90,6 +95,22 @@ function ($parse) {
           .attr("width", barWidth - 2)
           .attr('class', 'd3b')
         focus.exit();
+
+        var drawLines = d3.svg.line()
+                .defined(function(d) { return d.y != null; })
+                .x(function (d) { 
+                  console.log('oto')
+                  return x(d.createdAt); 
+                })
+                .y(function (d) {return y(d.content); })
+
+        svg.select('path')
+          .data(data)
+          .attr('class', 'chart')
+          .attr('d', drawLines)
+          .style('stroke-width', 1)
+          .style('fill', '#fff')
+          .style('stroke', '#3F51B5')
       });
     } 
   };

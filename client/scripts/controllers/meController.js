@@ -2,32 +2,48 @@
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-19 19:03:56
+* @Last Modified time: 2015-06-20 17:52:22
 */
 
 'use strict';
   
 angular.module('Hamsterace').controller('MeController',
-['$scope', '$rootScope', '$location', 'Sidebar', 'MeService',
-function ($scope, $rootScope, $location, Sidebar, MeService) {
+['$scope', 'Sidebar', 'MeService', 'StatsService',
+function ($scope, Sidebar, MeService, StatsService) {
   var self = this;
 
   // main template dependency
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
 
+  // graphs
+  $scope.stats = null;
+  $scope.bar = null;
+  $scope.activity = null;
+  $scope.resume = null;
+  $scope.type = null;
+
 
   // actions
   this.getStats = function (type) {
-    MeService.getStats(type).then(function(stats) {
+    return MeService.getStats(type).then(function(stats) {
       $scope.dataLoading = false;
       $scope.stats = stats.stats;
-      if ($scope.stats) {
-        $scope.bar = $scope.stats.distance.data;
-        $scope.activity = $scope.stats.activity.percent;
-      }
     })
   }
+
+  this.getBar = function () {
+    if ($scope.stats) {
+      $scope.bar = $scope.stats.distance.data;
+    }
+  }
+
+  this.getActivity = function () {
+    if ($scope.stats) {
+      $scope.activity = $scope.stats.activity.percent;
+    }
+  }
+
 
   this.getProfil = function () {
     MeService.getBasicProfil().then(function(profil) {
@@ -39,17 +55,40 @@ function ($scope, $rootScope, $location, Sidebar, MeService) {
     });
   }
 
-  $scope.profil = $scope.profil || this.getProfil();;
-  
-  // other
+  // event handler
 
-  // graphs
-  $scope.stats = $scope.stats || this.getStats();
-  $scope.bar = null;
-  $scope.activity = null;
-
-  $scope.changeGranulosity = function (type) {
-    $scope.stats = self.getStats(type);
+  $scope.setStats = function (type) {
+    if ($scope.type == type && $scope.stats)
+      return self.getBar();
+    self.getStats(type).then(function (stats) {
+      self.getBar();
+    })
+    $scope.type = type;
   }
+
+  $scope.setActivity = function (type) {
+    if ($scope.type == type && $scope.stats)
+      return self.getActivity();
+    self.getStats(type).then(function (stats) {
+      self.getActivity();
+    })
+    $scope.type = type;
+  }
+
+  $scope.getResume = function () {
+    self.getStats('monthly').then(function () {
+      $scope.resume = $scope.stats.summary;
+      if (!$scope.resume.average)
+        $scope.resume.average = $scope.resume.sum;
+      $scope.resume.sum = StatsService.contentToUnits($scope.resume.sum);
+      $scope.resume.max = StatsService.contentToUnits($scope.resume.max);
+      $scope.resume.average = StatsService.contentToUnits($scope.resume.average);
+    })
+  }
+
+  $scope.setStats('hourly');
+  $scope.setActivity('weekly');
+  $scope.getResume();
+  this.getProfil();
 
 }])

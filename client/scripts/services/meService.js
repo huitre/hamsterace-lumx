@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-19 20:20:42
+* @Last Modified time: 2015-06-20 11:59:53
 */
 
 'use strict';
@@ -25,8 +25,8 @@ function ($cookieStore, $http, $rootScope) {
   self.getFriends = function (callback) {
     return $http.get(_urls.friends).then(function (friends) {
       return friends.data;
-    })
-  }
+    }
+)  }
 
   self.getStats = function (type, value, $scope) {
     var url = _urls.stats;

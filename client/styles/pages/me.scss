@@ -59,10 +59,15 @@
 
    #mainAction .mui-app-bar-navigation-icon-button { float: none; }
 
+  .summary span span:first-child {
+    color: rgb(33, 150, 243);
+    letter-spacing: -1.5px;
+    font-size: 4em;
+    margin-right: 8px;
+  }
+  .summary span span:last-child {
+    font-size: 1.3em;
+    color: #818181;
+  }
 }
 
-#donught text {
-  font-size: 4em;
-  fill: #818181;
-  text-shadow: 1px 1px #0F0F0F;
-}

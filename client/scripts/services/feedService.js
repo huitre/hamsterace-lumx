@@ -1,4 +1,3 @@
-
 angular.module('Hamsterace.Services').factory('FeedService',
 ['$cookieStore', '$http', '$rootScope',
 function ($cookieStore, $http, $rootScope) {

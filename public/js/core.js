@@ -12983,8 +12983,9 @@ angular.module('Hamsterace', [
   ]
 );
 angular.module('Hamsterace.Directives', []).directive(
-'bars', [
-function ($parse) {
+'bars', 
+['StatsService',
+function (StatsService) {
   return {
     restrict: 'E',
     replace: true,
@@ -12994,12 +12995,13 @@ function ($parse) {
     },
     link: function (scope, element, attrs) {
       var domain = { x : 0, y : 0}, max, min,
-          svg, focus, context,
+          svg, focus, context, line,
           xAxis, yAxis,
           ow = element.width(), oh = element.height() || 300, eh = oh + 90,
           margin = {left: 8, top: 8, right: 8, bottom: 8},
           barWidth = 5,
           delta = 0;
+
       scope.$watch(attrs.data, function (newValue, oldValue) {    
         var data = newValue, chart;
         svg = d3.select(element[0])
@@ -13053,10 +13055,13 @@ function ($parse) {
         xAxis = d3.svg.axis()
           .scale(x)
           .orient("bottom")
+          .ticks(10)
 
         yAxis = d3.svg.axis()
           .scale(y)
-          .orient("left");
+          .orient("left")
+          .tickFormat(function (d) { return StatsService.contentToUnits(d) })
+
         focus.select('.x.axis').attr('transform', 'translate(0,' + (oh - margin.bottom) + ')')
           .call(xAxis).selectAll("text")
             .style("text-anchor", "end")
@@ -13074,6 +13079,22 @@ function ($parse) {
           .attr("width", barWidth - 2)
           .attr('class', 'd3b')
         focus.exit();
+
+        var drawLines = d3.svg.line()
+                .defined(function(d) { return d.y != null; })
+                .x(function (d) { 
+                  console.log('oto')
+                  return x(d.createdAt); 
+                })
+                .y(function (d) {return y(d.content); })
+
+        svg.select('path')
+          .data(data)
+          .attr('class', 'chart')
+          .attr('d', drawLines)
+          .style('stroke-width', 1)
+          .style('fill', '#fff')
+          .style('stroke', '#3F51B5')
       });
     } 
   };
@@ -13091,12 +13112,13 @@ function ($parse) {
     link: function (scope, element, attrs) {
       scope.$watch(attrs.percent, function (newValue, oldValue) {        
         if (newValue) {
-          var data = [], 
+          var data = [],
               chart,
               width = element.width(),
               height = 300,
               radius = Math.min(width, height) / 1.7,
-              color, pie, arc, svg, background, path;
+              color, pie, arc, background, path,
+              svg = d3.select(element[0]);
 
           data = [100 - scope.activity, scope.activity];
 
@@ -13110,8 +13132,8 @@ function ($parse) {
               .outerRadius(radius - 50)
               .cornerRadius(50)
               
-          if (d3.select('svg')[0][0] == null) {
-            svg = d3.select(element[0]).append("svg")
+          if (svg.select('svg')[0][0] == null) {
+            svg = svg.append("svg")
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
@@ -13121,21 +13143,22 @@ function ($parse) {
                 .data(pie([100]))
                 .style("fill", "rgb(215, 215, 215)")
                 .attr("d", arc)
+          } else {
+            svg = svg.select('g');
+          }
+          
+          path = svg.selectAll(".p").remove().data([]).data(pie(data));
+          path.enter().append("path")
+              .attr("fill", function(d, i) { color = ['rgb(215, 215, 215)', '#2196F3']; return color[i]; })
+              .attr("d", arc)
+              .attr('class', 'p')
+          path.exit();
 
-            svg.append("text").text(Math.round(scope.activity) + ' %')
+          svg.select('text').remove();
+          svg.append("text").text(Math.round(scope.activity) + ' %')
               .attr("text-anchor", "middle")
               .attr("dy",15)
               .attr("dx",2);
-          } else {
-            svg = d3.select('svg');
-          }
-          
-          path = svg.selectAll("path")
-              .data(pie(data))
-            .enter().append("path")
-              .attr("fill", function(d, i) { return '#2196F3'/*color(i);*/ })
-              .attr("d", arc)
-
               
         }
       });
@@ -13335,7 +13358,6 @@ angular.module('Hamsterace.Services').factory('AuthenticationService',
 
   /* jshint ignore:end */
 })
-
 angular.module('Hamsterace.Services').factory('FeedService',
 ['$cookieStore', '$http', '$rootScope',
 function ($cookieStore, $http, $rootScope) {
@@ -13357,7 +13379,7 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-19 20:20:42
+* @Last Modified time: 2015-06-20 11:59:53
 */
 
 'use strict';
@@ -13380,8 +13402,8 @@ function ($cookieStore, $http, $rootScope) {
   self.getFriends = function (callback) {
     return $http.get(_urls.friends).then(function (friends) {
       return friends.data;
-    })
-  }
+    }
+)  }
 
   self.getStats = function (type, value, $scope) {
     var url = _urls.stats;
@@ -13490,6 +13512,35 @@ function() {
         toggleSidebar: toggleSidebar
     };
 }]);
+angular.module('Hamsterace.Services').factory('StatsService',
+['$translate', '$http', '$rootScope',
+function ($translate, $http, $rootScope) {
+  var _urls = {
+    
+  }, self = {}
+
+  self.contentToUnits = function (data) {
+    var units = ['units.cm', 'units.m', 'units.km'],
+        a = 0;
+        tmp = data;
+
+    // check if meter
+    data /= 100;
+    if (data >= 1) 
+      a = 1;
+    // check if km
+    data /= 10000;
+    if (data > 0.1)
+      a = 2;
+    else
+      data *= 10000;
+    if (a == 0)
+      data = tmp;
+    
+    return Math.round(data*100)/100 + $translate.instant(units[a]);
+  }
+  return self;
+}]);
 angular.module('Hamsterace').controller('FeedController',
 ['$scope', '$rootScope', '$location', 'Sidebar', 'FeedService', '$http', '$timeout',
 function ($scope, $rootScope, $location, Sidebar, FeedService, $http, $timeout) {
@@ -13571,32 +13622,48 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-19 19:03:56
+* @Last Modified time: 2015-06-20 17:52:22
 */
 
 'use strict';
   
 angular.module('Hamsterace').controller('MeController',
-['$scope', '$rootScope', '$location', 'Sidebar', 'MeService',
-function ($scope, $rootScope, $location, Sidebar, MeService) {
+['$scope', 'Sidebar', 'MeService', 'StatsService',
+function ($scope, Sidebar, MeService, StatsService) {
   var self = this;
 
   // main template dependency
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
 
+  // graphs
+  $scope.stats = null;
+  $scope.bar = null;
+  $scope.activity = null;
+  $scope.resume = null;
+  $scope.type = null;
+
 
   // actions
   this.getStats = function (type) {
-    MeService.getStats(type).then(function(stats) {
+    return MeService.getStats(type).then(function(stats) {
       $scope.dataLoading = false;
       $scope.stats = stats.stats;
-      if ($scope.stats) {
-        $scope.bar = $scope.stats.distance.data;
-        $scope.activity = $scope.stats.activity.percent;
-      }
     })
   }
+
+  this.getBar = function () {
+    if ($scope.stats) {
+      $scope.bar = $scope.stats.distance.data;
+    }
+  }
+
+  this.getActivity = function () {
+    if ($scope.stats) {
+      $scope.activity = $scope.stats.activity.percent;
+    }
+  }
+
 
   this.getProfil = function () {
     MeService.getBasicProfil().then(function(profil) {
@@ -13608,18 +13675,41 @@ function ($scope, $rootScope, $location, Sidebar, MeService) {
     });
   }
 
-  $scope.profil = $scope.profil || this.getProfil();;
-  
-  // other
+  // event handler
 
-  // graphs
-  $scope.stats = $scope.stats || this.getStats();
-  $scope.bar = null;
-  $scope.activity = null;
-
-  $scope.changeGranulosity = function (type) {
-    $scope.stats = self.getStats(type);
+  $scope.setStats = function (type) {
+    if ($scope.type == type && $scope.stats)
+      return self.getBar();
+    self.getStats(type).then(function (stats) {
+      self.getBar();
+    })
+    $scope.type = type;
   }
+
+  $scope.setActivity = function (type) {
+    if ($scope.type == type && $scope.stats)
+      return self.getActivity();
+    self.getStats(type).then(function (stats) {
+      self.getActivity();
+    })
+    $scope.type = type;
+  }
+
+  $scope.getResume = function () {
+    self.getStats('monthly').then(function () {
+      $scope.resume = $scope.stats.summary;
+      if (!$scope.resume.average)
+        $scope.resume.average = $scope.resume.sum;
+      $scope.resume.sum = StatsService.contentToUnits($scope.resume.sum);
+      $scope.resume.max = StatsService.contentToUnits($scope.resume.max);
+      $scope.resume.average = StatsService.contentToUnits($scope.resume.average);
+    })
+  }
+
+  $scope.setStats('hourly');
+  $scope.setActivity('weekly');
+  $scope.getResume();
+  this.getProfil();
 
 }])
 /* 
@@ -13679,7 +13769,8 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 
 
 }])
-angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $urlRouterProvider) {
+angular.module('Hamsterace').config( 
+function($httpProvider, $stateProvider, $urlRouterProvider) {
     
     $httpProvider.defaults.withCredentials = true;
 
@@ -13707,6 +13798,31 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
         controller: 'RankingController'
     });
 
+    // handle 403/401
+    $httpProvider.interceptors.push([
+    '$rootScope', '$q', '$location',
+    function($rootScope, $q, $location) {
+        return {
+            // optional method
+            'response': function(response) {
+              // do something on success
+              return response;
+            },
+
+            // optional method
+           'responseError': function(rejection) {
+                if (rejection.status === 403 || rejection.status === 401) {
+                    $rootScope.globals.currentUser = null;
+                    $location.path('/')
+                }
+                // do something on error
+                if (canRecover(rejection)) {
+                    return responseOrNewPromise
+                }
+                return $q.reject(rejection);
+            }
+        };
+    }]);
 
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
@@ -13719,11 +13835,15 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
             $location.path('/');
         }
     });
+
 }]);
 
 angular.module('Hamsterace').config(['$translateProvider', function ($translateProvider) {
   
   $translateProvider.translations('en', {
+    'units.cm': 'cm',
+    'units.m': 'm',
+    'units.km': 'km',
     'ui.validate': 'Validate',
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
@@ -13739,10 +13859,16 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ranking.rank.1': 'st',
     'ranking.rank.2': 'nd',
     'ranking.rank.3': 'rd',
-    'ranking.rank.4': 'th'
+    'ranking.rank.4': 'th',
+    'me.max': 'distance maximale',
+    'me.sum': 'distance totale',
+    'me.average': 'distance moyenne'
   });
  
   $translateProvider.translations('fr', {
+    'units.cm': 'cm',
+    'units.m': 'm',
+    'units.km': 'km',
     'ui.validate': 'Valider',
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
@@ -13758,7 +13884,10 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ranking.rank.1': 'er',
     'ranking.rank.2': 'eme',
     'ranking.rank.3': 'eme',
-    'ranking.rank.4': 'eme'
+    'ranking.rank.4': 'eme',
+    'me.max': 'distance maximale',
+    'me.sum': 'distance totale',
+    'me.average': 'distance moyenne'
   });
  
   $translateProvider.preferredLanguage('fr');

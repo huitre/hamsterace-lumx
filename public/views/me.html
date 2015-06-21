@@ -9,11 +9,19 @@
         <span class="fs-subhead display-block">{{'ui.age' | translate}}: {{profil.age}}</span>
         <span class="fs-subhead display-block">{{'ui.since' | translate}}: {{profil.createdAt}}</span>
         <span class="fs-subhead display-block">{{'ui.lastactivity' | translate}}: {{profil.updatedAt}}</span>
+      </div>
+    </div>
+  </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+">
+        <p class="fs-title display-block ">{{'me.friends' | translate}}</p>
         <span class="fs-subhead">{{friends.length}} {{'ui.totalFriends' | translate}}</span>
         <div style="display: flex">
           <a class="inline-block" ng-repeat="friend in friends" ui-sref="user/{{friend.id}}">
-           <img class="img-round inline-block" height="30" src="{{friend.avatar.resource}}"/>
+           <img class="img-round inline-block" height="50" src="{{friend.avatar.resource}}"/>
           </a>
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple">+</button> 
         </div>
       </div>
     </div>
@@ -22,6 +30,12 @@
     <div class="card">
       <div class="p+">
         <p class="fs-title display-block ">{{'me.activity' | translate}}</p>
+        <p class="toolbar">
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('hourly')">{{'ui.hours' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('daily')">{{'ui.day' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('weekly')">{{'ui.week' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('monthly')">{{'ui.month' | translate}}</button> 
+        </p>
         <donught percent="activity"></donught>
       </div>
     </div>
@@ -31,13 +45,30 @@
       <div class="p+">
         <p class="fs-title display-block ">{{'me.stats' | translate}}</p>
         <p class="toolbar">
-          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="changeGranulosity('hourly')">{{'ui.hours' | translate}}</button> 
-          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="changeGranulosity('daily')">{{'ui.day' | translate}}</button> 
-          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="changeGranulosity('weekly')">{{'ui.week' | translate}}</button> 
-          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="changeGranulosity('monthly')">{{'ui.month' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('hourly')">{{'ui.hours' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('daily')">{{'ui.day' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('weekly')">{{'ui.week' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('monthly')">{{'ui.month' | translate}}</button> 
         </p>
         <bars data="bar"></bars>
       </div>
     </div>
   </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+ summary">
+        <p class="fs-title display-block ">{{'me.resume' | translate}}</p>
+        <span class="display-block">
+          <span>{{resume.max}}</span><span>{{'me.max' | translate}}</span>
+        </span>
+        <span class="display-block">
+          <span>{{resume.sum}}</span><span>{{'me.sum' | translate}}</span>
+        </span>
+        <span class="display-block">
+          <span>{{resume.average}}</span><span>{{'me.average' | translate}}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
 </div>

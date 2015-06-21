@@ -11,12 +11,13 @@ function ($parse) {
     link: function (scope, element, attrs) {
       scope.$watch(attrs.percent, function (newValue, oldValue) {        
         if (newValue) {
-          var data = [], 
+          var data = [],
               chart,
               width = element.width(),
               height = 300,
               radius = Math.min(width, height) / 1.7,
-              color, pie, arc, svg, background, path;
+              color, pie, arc, background, path,
+              svg = d3.select(element[0]);
 
           data = [100 - scope.activity, scope.activity];
 
@@ -30,8 +31,8 @@ function ($parse) {
               .outerRadius(radius - 50)
               .cornerRadius(50)
               
-          if (d3.select('svg')[0][0] == null) {
-            svg = d3.select(element[0]).append("svg")
+          if (svg.select('svg')[0][0] == null) {
+            svg = svg.append("svg")
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
@@ -41,21 +42,22 @@ function ($parse) {
                 .data(pie([100]))
                 .style("fill", "rgb(215, 215, 215)")
                 .attr("d", arc)
+          } else {
+            svg = svg.select('g');
+          }
+          
+          path = svg.selectAll(".p").remove().data([]).data(pie(data));
+          path.enter().append("path")
+              .attr("fill", function(d, i) { color = ['rgb(215, 215, 215)', '#2196F3']; return color[i]; })
+              .attr("d", arc)
+              .attr('class', 'p')
+          path.exit();
 
-            svg.append("text").text(Math.round(scope.activity) + ' %')
+          svg.select('text').remove();
+          svg.append("text").text(Math.round(scope.activity) + ' %')
               .attr("text-anchor", "middle")
               .attr("dy",15)
               .attr("dx",2);
-          } else {
-            svg = d3.select('svg');
-          }
-          
-          path = svg.selectAll("path")
-              .data(pie(data))
-            .enter().append("path")
-              .attr("fill", function(d, i) { return '#2196F3'/*color(i);*/ })
-              .attr("d", arc)
-
               
         }
       });

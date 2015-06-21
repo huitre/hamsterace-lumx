@@ -1,4 +1,5 @@
-angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $urlRouterProvider) {
+angular.module('Hamsterace').config( 
+function($httpProvider, $stateProvider, $urlRouterProvider) {
     
     $httpProvider.defaults.withCredentials = true;
 
@@ -26,6 +27,31 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
         controller: 'RankingController'
     });
 
+    // handle 403/401
+    $httpProvider.interceptors.push([
+    '$rootScope', '$q', '$location',
+    function($rootScope, $q, $location) {
+        return {
+            // optional method
+            'response': function(response) {
+              // do something on success
+              return response;
+            },
+
+            // optional method
+           'responseError': function(rejection) {
+                if (rejection.status === 403 || rejection.status === 401) {
+                    $rootScope.globals.currentUser = null;
+                    $location.path('/')
+                }
+                // do something on error
+                if (canRecover(rejection)) {
+                    return responseOrNewPromise
+                }
+                return $q.reject(rejection);
+            }
+        };
+    }]);
 
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
@@ -38,11 +64,15 @@ angular.module('Hamsterace').config(function($httpProvider, $stateProvider, $url
             $location.path('/');
         }
     });
+
 }]);
 
 angular.module('Hamsterace').config(['$translateProvider', function ($translateProvider) {
   
   $translateProvider.translations('en', {
+    'units.cm': 'cm',
+    'units.m': 'm',
+    'units.km': 'km',
     'ui.validate': 'Validate',
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
@@ -58,10 +88,16 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ranking.rank.1': 'st',
     'ranking.rank.2': 'nd',
     'ranking.rank.3': 'rd',
-    'ranking.rank.4': 'th'
+    'ranking.rank.4': 'th',
+    'me.max': 'distance maximale',
+    'me.sum': 'distance totale',
+    'me.average': 'distance moyenne'
   });
  
   $translateProvider.translations('fr', {
+    'units.cm': 'cm',
+    'units.m': 'm',
+    'units.km': 'km',
     'ui.validate': 'Valider',
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
@@ -77,7 +113,10 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ranking.rank.1': 'er',
     'ranking.rank.2': 'eme',
     'ranking.rank.3': 'eme',
-    'ranking.rank.4': 'eme'
+    'ranking.rank.4': 'eme',
+    'me.max': 'distance maximale',
+    'me.sum': 'distance totale',
+    'me.average': 'distance moyenne'
   });
  
   $translateProvider.preferredLanguage('fr');
