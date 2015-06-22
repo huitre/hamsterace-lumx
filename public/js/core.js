@@ -13029,6 +13029,7 @@ function (StatsService) {
             .attr('height', eh)
             .attr("transform", "translate(" + 40 + "," + margin.top + ")");
 
+          focus.append('path')
           focus.append('g').attr('class', 'x axis')
           focus.append('g').attr('class', 'y axis')
 
@@ -13080,16 +13081,17 @@ function (StatsService) {
           .attr('class', 'd3b')
         focus.exit();
 
+        var average = 40;
+
         var drawLines = d3.svg.line()
-                .defined(function(d) { return d.y != null; })
+                //.defined(function(d) { return d.y != null; })
                 .x(function (d) { 
-                  console.log('oto')
-                  return x(d.createdAt); 
+                  return x(new Date(d.createdAt));
                 })
-                .y(function (d) {return y(d.content); })
+                .y(function (d) {return y(average); })
 
         svg.select('path')
-          .data(data)
+          .datum(data)
           .attr('class', 'chart')
           .attr('d', drawLines)
           .style('stroke-width', 1)
@@ -13379,19 +13381,19 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-20 11:59:53
+* @Last Modified time: 2015-06-22 22:08:58
 */
 
 'use strict';
 
 angular.module('Hamsterace.Services').factory('MeService',
-['$cookieStore', '$http', '$rootScope',
-function ($cookieStore, $http, $rootScope) {
+['$http', '$rootScope', '$q',
+function ($http, $rootScope, $q) {
   var _urls = {
     me: Config.api.url + 'me/',
     friends: Config.api.url + 'me/friends',
     stats: Config.api.url + 'me/stats'
-  }, self = {}
+  }, self = {}, cStats = {data : [], time : new Date()};  
 
   self.getBasicProfil = function (callback) {
     return $http.get(_urls.me).then(function (profil) {
@@ -13410,7 +13412,19 @@ function ($cookieStore, $http, $rootScope) {
     if (type != null)
       url = _urls.stats + '/' + type;
 
+    // on retourne les datas en cache des 30 dernieres secondes
+    if (cStats[type]) {
+      if (new Date() - cStats[type].time < 30 * 1000) {
+        return $q(function (resolve, reject) {
+          resolve(cStats[type].data);
+        });
+      }
+    }
+
     return $http.get(url).then(function (stats) {
+      cStats[type] = {};
+      cStats[type].data = stats.data;
+      cStats[type].time = new Date();
       return stats.data;
     })
   }
@@ -13622,7 +13636,7 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-20 17:52:22
+* @Last Modified time: 2015-06-22 22:35:26
 */
 
 'use strict';
@@ -13640,6 +13654,7 @@ function ($scope, Sidebar, MeService, StatsService) {
   $scope.stats = null;
   $scope.bar = null;
   $scope.activity = null;
+  $scope.dayActivity = null;
   $scope.resume = null;
   $scope.type = null;
 
@@ -13687,12 +13702,26 @@ function ($scope, Sidebar, MeService, StatsService) {
   }
 
   $scope.setActivity = function (type) {
-    if ($scope.type == type && $scope.stats)
-      return self.getActivity();
     self.getStats(type).then(function (stats) {
       self.getActivity();
     })
     $scope.type = type;
+  }
+
+  $scope.setActivity = function (type) {
+    self.getStats(type).then(function (stats) {
+      self.getActivity();
+    })
+    $scope.type = type;
+  }
+
+  $scope.setDayActivity = function (type) {
+    self.getStats(type).then(function (stats) {
+      $scope.dayActivity = $scope.stats.summary;
+      for (var i in $scope.dayActivity) {
+        $scope.dayActivity[i] = StatsService.contentToUnits($scope.dayActivity[i]);
+      }
+    })
   }
 
   $scope.getResume = function () {
@@ -13708,6 +13737,7 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.setStats('hourly');
   $scope.setActivity('weekly');
+  $scope.setDayActivity('hourly');
   $scope.getResume();
   this.getProfil();
 

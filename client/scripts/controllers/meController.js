@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-20 17:52:22
+* @Last Modified time: 2015-06-22 22:35:26
 */
 
 'use strict';
@@ -20,6 +20,7 @@ function ($scope, Sidebar, MeService, StatsService) {
   $scope.stats = null;
   $scope.bar = null;
   $scope.activity = null;
+  $scope.dayActivity = null;
   $scope.resume = null;
   $scope.type = null;
 
@@ -67,12 +68,26 @@ function ($scope, Sidebar, MeService, StatsService) {
   }
 
   $scope.setActivity = function (type) {
-    if ($scope.type == type && $scope.stats)
-      return self.getActivity();
     self.getStats(type).then(function (stats) {
       self.getActivity();
     })
     $scope.type = type;
+  }
+
+  $scope.setActivity = function (type) {
+    self.getStats(type).then(function (stats) {
+      self.getActivity();
+    })
+    $scope.type = type;
+  }
+
+  $scope.setDayActivity = function (type) {
+    self.getStats(type).then(function (stats) {
+      $scope.dayActivity = $scope.stats.summary;
+      for (var i in $scope.dayActivity) {
+        $scope.dayActivity[i] = StatsService.contentToUnits($scope.dayActivity[i]);
+      }
+    })
   }
 
   $scope.getResume = function () {
@@ -88,6 +103,7 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.setStats('hourly');
   $scope.setActivity('weekly');
+  $scope.setDayActivity('hourly');
   $scope.getResume();
   this.getProfil();
 

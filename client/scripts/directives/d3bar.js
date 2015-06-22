@@ -45,6 +45,7 @@ function (StatsService) {
             .attr('height', eh)
             .attr("transform", "translate(" + 40 + "," + margin.top + ")");
 
+          focus.append('path')
           focus.append('g').attr('class', 'x axis')
           focus.append('g').attr('class', 'y axis')
 
@@ -96,16 +97,17 @@ function (StatsService) {
           .attr('class', 'd3b')
         focus.exit();
 
+        var average = 40;
+
         var drawLines = d3.svg.line()
-                .defined(function(d) { return d.y != null; })
+                //.defined(function(d) { return d.y != null; })
                 .x(function (d) { 
-                  console.log('oto')
-                  return x(d.createdAt); 
+                  return x(new Date(d.createdAt));
                 })
-                .y(function (d) {return y(d.content); })
+                .y(function (d) {return y(average); })
 
         svg.select('path')
-          .data(data)
+          .datum(data)
           .attr('class', 'chart')
           .attr('d', drawLines)
           .style('stroke-width', 1)

@@ -21,7 +21,7 @@
           <a class="inline-block" ng-repeat="friend in friends" ui-sref="user/{{friend.id}}">
            <img class="img-round inline-block" height="50" src="{{friend.avatar.resource}}"/>
           </a>
-          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple">+</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple>+</button> 
         </div>
       </div>
     </div>
@@ -59,13 +59,13 @@
       <div class="p+ summary">
         <p class="fs-title display-block ">{{'me.resume' | translate}}</p>
         <span class="display-block">
-          <span>{{resume.max}}</span><span>{{'me.max' | translate}}</span>
+          <span><span>{{dayActivity.max}}</span>{{resume.max}}</span><span>{{'me.max' | translate}}</span>
         </span>
         <span class="display-block">
-          <span>{{resume.sum}}</span><span>{{'me.sum' | translate}}</span>
+          <span><span>{{dayActivity.sum}}</span>{{resume.sum}}</span><span>{{'me.sum' | translate}}</span>
         </span>
         <span class="display-block">
-          <span>{{resume.average}}</span><span>{{'me.average' | translate}}</span>
+          <span><span>{{dayActivity.average}}</span>{{resume.average}}</span><span>{{'me.average' | translate}}</span>
         </span>
       </div>
     </div>

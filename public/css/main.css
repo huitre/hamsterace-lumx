@@ -6108,11 +6108,19 @@ header {
 .me .summary span span:first-child {
   color: #2196f3;
   letter-spacing: -1.5px;
-  font-size: 4em;
-  margin-right: 8px; }
+  font-size: 2.7em;
+  margin-right: 6px;
+  text-align: right; }
 .me .summary span span:last-child {
   font-size: 1.3em;
+  letter-spacing: -1px;
   color: #818181; }
+.me .summary span span:first-child span {
+  font-size: 0.6em;
+  margin-right: 2px; }
+.me .summary span span:first-child span::after {
+  content: "/";
+  margin-left: 6px; }
 
 /*
  * Charts styling
