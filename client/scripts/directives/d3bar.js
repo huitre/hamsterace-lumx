@@ -45,14 +45,16 @@ function (StatsService) {
             .attr('height', eh)
             .attr("transform", "translate(" + 40 + "," + margin.top + ")");
 
-          focus.append('path')
-          focus.append('g').attr('class', 'x axis')
-          focus.append('g').attr('class', 'y axis')
+          focus.append('g').attr('class', 'x axis');
+          focus.append('g').attr('class', 'y axis');
+          focus.append('path').attr('class', 'max');
+          focus.append('path').attr('class', 'min');
+          focus.append('path').attr('class', 'average');
 
         } else {
           focus = svg.select('.focus');
           svg.select('svg').attr('height', oh + 90);
-          focus.attr('height', oh + 90)
+          focus.attr('height', oh + 90);
         }
 
 
@@ -97,22 +99,43 @@ function (StatsService) {
           .attr('class', 'd3b')
         focus.exit();
 
-        var average = 40;
-
-        var drawLines = d3.svg.line()
-                //.defined(function(d) { return d.y != null; })
-                .x(function (d) { 
-                  return x(new Date(d.createdAt));
-                })
+        var accessor = function (d) {return d.content},
+            average = Math.round(d3.sum(data, accessor) / data.length),
+            drawLinesMin = d3.svg.line()
+                        .x(function (d) { return x(new Date(d.createdAt)); })
+                        .y(function (d) {return y(min); })
+                        .interpolate('linear'),
+            drawLinesMax = d3.svg.line()
+                        .x(function (d) { return x(new Date(d.createdAt)); })
+                        .y(function (d) {return y(max); })
+                        .interpolate('linear'),
+            drawLines = d3.svg.line()
+                .x(function (d) { return x(new Date(d.createdAt));})
                 .y(function (d) {return y(average); })
+                .interpolate('linear')
 
-        svg.select('path')
+
+        svg.select('.min')
           .datum(data)
-          .attr('class', 'chart')
-          .attr('d', drawLines)
+          .attr('d', drawLinesMin)
           .style('stroke-width', 1)
-          .style('fill', '#fff')
-          .style('stroke', '#3F51B5')
+          .style('stroke', 'rgb(255, 10, 75)')
+          //.style('stroke-dasharray', '1,2')
+
+        svg.select('.max')
+          .datum(data)
+          .attr('d', drawLinesMax)
+          //.style('stroke-dasharray', '1,1')
+          .style('stroke-width', 1)
+          .style('stroke', 'rgb(152, 231, 189)')
+
+          svg.select('.average')
+          .datum(data)
+          .attr('d', drawLines)
+          //.style('stroke-dasharray', '1,2')
+          .style('stroke-width', 0.5)
+          .style('stroke', '#ccc')
+
       });
     } 
   };

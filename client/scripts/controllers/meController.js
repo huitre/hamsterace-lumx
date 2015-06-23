@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-22 22:35:26
+* @Last Modified time: 2015-06-23 22:11:21
 */
 
 'use strict';
@@ -48,6 +48,7 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   this.getProfil = function () {
     MeService.getBasicProfil().then(function(profil) {
+      console.log(profil)
       MeService.getFriends().then(function (friends) {
         $scope.dataLoading = false;
         $scope.profil = profil;
