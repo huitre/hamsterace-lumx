@@ -1,6 +1,6 @@
 <ng-include src="'views/appbar.html'"></ng-include>
 <ng-include src="'views/sidebar.html'"></ng-include>
-<div flex-container="row" flex-gutter="24" class="me main">
+<div flex-container="row" flex-gutter="24" class="Me main">
   <div class="img-round" style="height: 150px;background-image: url(http://www.google.fr/url?source=imglanding&amp;ct=img&amp;q=http://www.thehindu.com/multimedia/dynamic/01488/VBK-NADAL_1488114f.jpg&amp;sa=X&amp;ei=JlJTVYnTOILjUcX1gMgI&amp;ved=0CAkQ8wc&amp;usg=AFQjCNEEXSl1lcANS4cQeZNcWaLLxO1T1w);background-size: cover;width: 150px;margin: auto;position: relative;top: 75px;"></div>
   <div flex-item>
     <div class="card top--">
@@ -17,7 +17,7 @@
       <div class="p+">
         <p class="fs-title display-block ">{{'me.friends' | translate}}</p>
         <span class="fs-subhead">{{friends.length}} {{'ui.totalFriends' | translate}}</span>
-        <div style="display: flex">
+        <div style="display: flex; align-items: center;">
           <a class="inline-block" ng-repeat="friend in friends" ui-sref="user/{{friend.id}}">
            <img class="img-round inline-block" height="50" src="{{friend.avatar.resource}}"/>
           </a>

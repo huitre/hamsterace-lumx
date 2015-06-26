@@ -12998,7 +12998,7 @@ function (StatsService) {
           svg, focus, context, line,
           xAxis, yAxis,
           ow = element.width(), oh = element.height() || 300, eh = oh + 90,
-          margin = {left: 8, top: 8, right: 8, bottom: 8},
+          margin = {left: 23, top: 8, right: 8, bottom: 8},
           barWidth = 5,
           delta = 0;
 
@@ -13020,14 +13020,14 @@ function (StatsService) {
           // drawing elements
           svg = svg.append('svg')
             .attr('class', 'd3')
-            .attr('width', ow - margin.left - margin.right)
+            .attr('width', ow)
             .attr('height', eh)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + 0 + "," + margin.top + ")");
           focus = svg.append("g")
             .attr("class", "focus")
             .attr('width', ow - margin.left - margin.right)
             .attr('height', eh)
-            .attr("transform", "translate(" + 40 + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left+ "," + margin.top + ")");
 
           focus.append('g').attr('class', 'x axis');
           focus.append('g').attr('class', 'y axis');
@@ -13404,7 +13404,7 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-22 22:08:58
+* @Last Modified time: 2015-06-26 11:11:13
 */
 
 'use strict';
@@ -13659,7 +13659,7 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-23 22:11:21
+* @Last Modified time: 2015-06-26 18:42:20
 */
 
 'use strict';
@@ -13692,20 +13692,28 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   this.getBar = function () {
     if ($scope.stats) {
-      $scope.bar = $scope.stats.distance.data;
+      if ($scope.stats.hasOwnProperty('distance') &&
+          $scope.stats.distance.hasOwnProperty('data')) {
+        $scope.bar = $scope.stats.distance.data;
+      } else {
+        $scope.bar = null;
+      }
     }
   }
 
   this.getActivity = function () {
     if ($scope.stats) {
-      $scope.activity = $scope.stats.activity.percent;
+      if ($scope.stats.hasOwnProperty('activity')) {
+        $scope.activity = $scope.stats.activity.percent;
+      } else {
+        $scope.activity = null;
+      }
     }
   }
 
 
   this.getProfil = function () {
     MeService.getBasicProfil().then(function(profil) {
-      console.log(profil)
       MeService.getFriends().then(function (friends) {
         $scope.dataLoading = false;
         $scope.profil = profil;
@@ -13741,7 +13749,12 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.setDayActivity = function (type) {
     self.getStats(type).then(function (stats) {
-      $scope.dayActivity = $scope.stats.summary;
+      if ($scope.stats.hasOwnProperty('summary')) {
+        $scope.dayActivity = $scope.stats.summary;
+      } else {
+        $scope.dayActivity = null;
+        return;
+      }
       for (var i in $scope.dayActivity) {
         $scope.dayActivity[i] = StatsService.contentToUnits($scope.dayActivity[i]);
       }
@@ -13750,6 +13763,8 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.getResume = function () {
     self.getStats('monthly').then(function () {
+      if (!$scope.stats.hasOwnProperty('summary'))
+        return;
       $scope.resume = $scope.stats.summary;
       if (!$scope.resume.average)
         $scope.resume.average = $scope.resume.sum;
@@ -13857,21 +13872,10 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
     '$rootScope', '$q', '$location',
     function($rootScope, $q, $location) {
         return {
-            // optional method
-            'response': function(response) {
-              // do something on success
-              return response;
-            },
-
-            // optional method
            'responseError': function(rejection) {
                 if (rejection.status === 403 || rejection.status === 401) {
                     $rootScope.globals.currentUser = null;
-                    $location.path('/')
-                }
-                // do something on error
-                if (canRecover(rejection)) {
-                    return responseOrNewPromise
+                    $location.path('/');
                 }
                 return $q.reject(rejection);
             }
@@ -13902,6 +13906,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
     'ui.ranking.type': 'toto',
+    'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
     'appbar.ranking': 'Ranking',
@@ -13927,6 +13932,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
     'ui.ranking.type' : 'toto',
+    'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
     'appbar.ranking': 'Classements',

@@ -11,3 +11,8 @@ body {
 
 .search-filter__container {
   background: #fff; }
+
+.card__actions {
+  padding: 8px;
+  border-top: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  margin-top: -1px; }

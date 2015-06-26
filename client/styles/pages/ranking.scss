@@ -1,62 +1,73 @@
+.Ranking {
+
+  .classement {
+    margin: 1em 0 1em 0;
+  }
+
+  .classement span {
+    line-height: 1em;
+    display: inline-block;
+  }
+
+  .rank-content img {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .rank-1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #FFE525;
+  }
+
+  .rank-2 {
+    font-size: 1.7em;
+    font-weight: bold;
+    color: #CBD7F6;
+  }
+
+  .rank-3 {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #A35725;
+  }
+
+  .rank-4 {
+    font-weight: 400;
+    font-size: 1.2em;
+  }
+
+  .ranking-content:nth-child(4n-1) {
+    font-size: large;
+    color: #2196F3 !important;
+  }
 
 
-.classement {
-  margin: 1em 0 1em 0;
+  .classement .content:first-child {
+    font-weight: bold;
+  }
+
+  .classement .content div .value:first-child {
+    font-weight: bold;
+  }
+
+  .classement .content .value {
+    margin-top: 0 !important;
+  }
+  .classement .content .value span {
+    padding-right: 3px;
+  }
+
+  .lx-select:before { border: none !important }
+  .dropdown {
+    margin: 8px;
+    padding: 8px;
+    background-color: #fff;
+  }
+  hra-overflow {
+    background: #eee;
+  }
 }
-
-.classement span {
-  line-height: 1em;
-  display: inline-block;
-}
-
-.rank-content img {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.rank-1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #FFE525;
-}
-
-.rank-2 {
-  font-size: 1.7em;
-  font-weight: bold;
-  color: #CBD7F6;
-}
-
-.rank-3 {
-  font-size: 1.3em;
-  font-weight: bold;
-  color: #A35725;
-}
-
-.rank-4 {
-  font-weight: 400;
-  font-size: 1.2em;
-}
-
-.ranking-content:nth-child(4n-1) {
-  font-size: large;
-}
-
-
-.classement .content:first-child {
-  font-weight: bold;
-}
-
-.classement .content div .value:first-child {
-  font-weight: bold;
-}
-
-.classement .content .value {
-  margin-top: 0 !important;
-}
-.classement .content .value span {
-  padding-right: 3px;
-}
-
 
 @media screen and (max-width: 6in) {
   .classement .rank {

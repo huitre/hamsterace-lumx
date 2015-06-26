@@ -5863,6 +5863,11 @@ body {
 .search-filter__container {
   background: #fff; }
 
+.card__actions {
+  padding: 8px;
+  border-top: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  margin-top: -1px; }
+
 header {
   position: relative;
   z-index: 4;
@@ -5902,7 +5907,7 @@ header {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 0;
+  z-index: 4;
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 0;
   pointer-events: none;
@@ -5948,7 +5953,7 @@ header {
 
 .sidebar-menu__link {
   display: block;
-  padding: 0 16px;
+  /*padding: 0 $base-spacing-unit;*/
   cursor: pointer;
   font-size: 14px;
   font-size: 0.875rem;
@@ -6056,25 +6061,25 @@ header {
     top: 15em; }
  }
 
-.me article {
+.Me article {
   margin: 5em auto 5em auto; }
-.me .mui-app-bar {
+.Me .mui-app-bar {
   background-color: #3F51B5;
   top: 0;
   height: 128px;
   position: fixed;
   padding: 0;
   width: 88%; }
-.me .mui-app-bar h1 {
+.Me .mui-app-bar h1 {
   font-weight: 400;
   font-size: 36px;
   line-height: 72px;
   font-family: "RobotoDraft", "Roboto", sans-serif;
   color: white;
   margin-left: 48px; }
-.me .mui-toolbar .mui-toolbar-group.mui-right:last-child {
+.Me .mui-toolbar .mui-toolbar-group.mui-right:last-child {
   margin-right: 0; }
-.me nav {
+.Me nav {
   height: 64px;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -6087,38 +6092,38 @@ header {
           align-items: baseline;
   float: left;
   width: 100%; }
-.me .mui-font-icon {
+.Me .mui-font-icon {
   color: white;
   fill: white;
   height: 20px;
   width: 24px; }
-.me .mui-left-nav {
+.Me .mui-left-nav {
   width: 19em; }
-.me #mainAction {
+.Me #mainAction {
   position: absolute;
   right: 5%;
   bottom: -26.5px;
   z-index: 1;
   padding: 0; }
-.me #mainAction .mui-paper-container {
+.Me #mainAction .mui-paper-container {
   padding: 0;
   margin: 0; }
-.me #mainAction .mui-app-bar-navigation-icon-button {
+.Me #mainAction .mui-app-bar-navigation-icon-button {
   float: none; }
-.me .summary span span:first-child {
+.Me .summary span span:first-child {
   color: #2196f3;
   letter-spacing: -1.5px;
   font-size: 2.7em;
   margin-right: 6px;
   text-align: right; }
-.me .summary span span:last-child {
+.Me .summary span span:last-child {
   font-size: 1.3em;
   letter-spacing: -1px;
   color: #818181; }
-.me .summary span span:first-child span {
+.Me .summary span span:first-child span {
   font-size: 0.6em;
   margin-right: 2px; }
-.me .summary span span:first-child span::after {
+.Me .summary span span:first-child span::after {
   content: "/";
   margin-left: 6px; }
 
@@ -6138,50 +6143,48 @@ header {
   fill: #3F51B5;
   opacity: 0.3; }
 
-.classement {
+.Ranking .classement {
   margin: 1em 0 1em 0; }
-
-.classement span {
+.Ranking .classement span {
   line-height: 1em;
   display: inline-block; }
-
-.rank-content img {
+.Ranking .rank-content img {
   display: inline-block;
   vertical-align: middle; }
-
-.rank-1 {
+.Ranking .rank-1 {
   font-size: 2em;
   font-weight: bold;
   color: #FFE525; }
-
-.rank-2 {
+.Ranking .rank-2 {
   font-size: 1.7em;
   font-weight: bold;
   color: #CBD7F6; }
-
-.rank-3 {
+.Ranking .rank-3 {
   font-size: 1.3em;
   font-weight: bold;
   color: #A35725; }
-
-.rank-4 {
+.Ranking .rank-4 {
   font-weight: 400;
   font-size: 1.2em; }
-
-.ranking-content:nth-child(4n-1) {
-  font-size: large; }
-
-.classement .content:first-child {
+.Ranking .ranking-content:nth-child(4n-1) {
+  font-size: large;
+  color: #2196F3 !important; }
+.Ranking .classement .content:first-child {
   font-weight: bold; }
-
-.classement .content div .value:first-child {
+.Ranking .classement .content div .value:first-child {
   font-weight: bold; }
-
-.classement .content .value {
+.Ranking .classement .content .value {
   margin-top: 0 !important; }
-
-.classement .content .value span {
+.Ranking .classement .content .value span {
   padding-right: 3px; }
+.Ranking .lx-select:before {
+  border: none !important; }
+.Ranking .dropdown {
+  margin: 8px;
+  padding: 8px;
+  background-color: #fff; }
+.Ranking hra-overflow {
+  background: #eee; }
 
 @media screen and (max-width: 6in) {
   .classement .rank {
@@ -6202,6 +6205,8 @@ header {
   width: 32px;
   height: 32px;
   margin: auto; }
+.feed .list-row--first-post {
+  box-shadow: 1px 1px 13px rgba(86, 52, 44, 0.18); }
 
 .main {
   z-index: 2;
@@ -6226,8 +6231,7 @@ header.card {
   width: 100%; }
 
 .inline-block {
-  display: inline-block;
-  margin: auto; }
+  display: inline-block; }
 
 .btn.btn--margin {
   margin-right: 4px; }

@@ -32,21 +32,10 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
     '$rootScope', '$q', '$location',
     function($rootScope, $q, $location) {
         return {
-            // optional method
-            'response': function(response) {
-              // do something on success
-              return response;
-            },
-
-            // optional method
            'responseError': function(rejection) {
                 if (rejection.status === 403 || rejection.status === 401) {
                     $rootScope.globals.currentUser = null;
-                    $location.path('/')
-                }
-                // do something on error
-                if (canRecover(rejection)) {
-                    return responseOrNewPromise
+                    $location.path('/');
                 }
                 return $q.reject(rejection);
             }
@@ -77,6 +66,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'Sign up',
     'ui.ranking': 'Ranking',
     'ui.ranking.type': 'toto',
+    'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
     'appbar.ranking': 'Ranking',
@@ -102,6 +92,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.connect': 'S\'inscrire',
     'ui.ranking': 'Classement',
     'ui.ranking.type' : 'toto',
+    'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
     'appbar.ranking': 'Classements',

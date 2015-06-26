@@ -14,7 +14,7 @@ function (StatsService) {
           svg, focus, context, line,
           xAxis, yAxis,
           ow = element.width(), oh = element.height() || 300, eh = oh + 90,
-          margin = {left: 8, top: 8, right: 8, bottom: 8},
+          margin = {left: 23, top: 8, right: 8, bottom: 8},
           barWidth = 5,
           delta = 0;
 
@@ -36,14 +36,14 @@ function (StatsService) {
           // drawing elements
           svg = svg.append('svg')
             .attr('class', 'd3')
-            .attr('width', ow - margin.left - margin.right)
+            .attr('width', ow)
             .attr('height', eh)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + 0 + "," + margin.top + ")");
           focus = svg.append("g")
             .attr("class", "focus")
             .attr('width', ow - margin.left - margin.right)
             .attr('height', eh)
-            .attr("transform", "translate(" + 40 + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left+ "," + margin.top + ")");
 
           focus.append('g').attr('class', 'x axis');
           focus.append('g').attr('class', 'y axis');

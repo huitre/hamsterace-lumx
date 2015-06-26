@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-23 22:11:21
+* @Last Modified time: 2015-06-26 18:42:20
 */
 
 'use strict';
@@ -35,20 +35,28 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   this.getBar = function () {
     if ($scope.stats) {
-      $scope.bar = $scope.stats.distance.data;
+      if ($scope.stats.hasOwnProperty('distance') &&
+          $scope.stats.distance.hasOwnProperty('data')) {
+        $scope.bar = $scope.stats.distance.data;
+      } else {
+        $scope.bar = null;
+      }
     }
   }
 
   this.getActivity = function () {
     if ($scope.stats) {
-      $scope.activity = $scope.stats.activity.percent;
+      if ($scope.stats.hasOwnProperty('activity')) {
+        $scope.activity = $scope.stats.activity.percent;
+      } else {
+        $scope.activity = null;
+      }
     }
   }
 
 
   this.getProfil = function () {
     MeService.getBasicProfil().then(function(profil) {
-      console.log(profil)
       MeService.getFriends().then(function (friends) {
         $scope.dataLoading = false;
         $scope.profil = profil;
@@ -84,7 +92,12 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.setDayActivity = function (type) {
     self.getStats(type).then(function (stats) {
-      $scope.dayActivity = $scope.stats.summary;
+      if ($scope.stats.hasOwnProperty('summary')) {
+        $scope.dayActivity = $scope.stats.summary;
+      } else {
+        $scope.dayActivity = null;
+        return;
+      }
       for (var i in $scope.dayActivity) {
         $scope.dayActivity[i] = StatsService.contentToUnits($scope.dayActivity[i]);
       }
@@ -93,6 +106,8 @@ function ($scope, Sidebar, MeService, StatsService) {
 
   $scope.getResume = function () {
     self.getStats('monthly').then(function () {
+      if (!$scope.stats.hasOwnProperty('summary'))
+        return;
       $scope.resume = $scope.stats.summary;
       if (!$scope.resume.average)
         $scope.resume.average = $scope.resume.sum;
