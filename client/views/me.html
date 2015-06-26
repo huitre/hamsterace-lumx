@@ -1,2 +1,74 @@
 <ng-include src="'views/appbar.html'"></ng-include>
 <ng-include src="'views/sidebar.html'"></ng-include>
+<div flex-container="row" flex-gutter="24" class="Me main">
+  <div class="img-round" style="height: 150px;background-image: url(http://www.google.fr/url?source=imglanding&amp;ct=img&amp;q=http://www.thehindu.com/multimedia/dynamic/01488/VBK-NADAL_1488114f.jpg&amp;sa=X&amp;ei=JlJTVYnTOILjUcX1gMgI&amp;ved=0CAkQ8wc&amp;usg=AFQjCNEEXSl1lcANS4cQeZNcWaLLxO1T1w);background-size: cover;width: 150px;margin: auto;position: relative;top: 75px;"></div>
+  <div flex-item>
+    <div class="card top--">
+      <div class="p+">
+        <span class="fs-title display-block {{profil.gender}}">{{profil.firstname}} {{profil.name}}</span>
+        <span class="fs-subhead display-block">{{'ui.age' | translate}}: {{profil.age}}</span>
+        <span class="fs-subhead display-block">{{'ui.since' | translate}}: {{profil.createdAt}}</span>
+        <span class="fs-subhead display-block">{{'ui.lastactivity' | translate}}: {{profil.updatedAt}}</span>
+      </div>
+    </div>
+  </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+">
+        <p class="fs-title display-block ">{{'me.friends' | translate}}</p>
+        <span class="fs-subhead">{{friends.length}} {{'ui.totalFriends' | translate}}</span>
+        <div style="display: flex; align-items: center;">
+          <a class="inline-block" ng-repeat="friend in friends" ui-sref="user/{{friend.id}}">
+           <img class="img-round inline-block" height="50" src="{{friend.avatar.resource}}"/>
+          </a>
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple>+</button> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+">
+        <p class="fs-title display-block ">{{'me.activity' | translate}}</p>
+        <p class="toolbar">
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('hourly')">{{'ui.hours' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('daily')">{{'ui.day' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('weekly')">{{'ui.week' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setActivity('monthly')">{{'ui.month' | translate}}</button> 
+        </p>
+        <donught percent="activity"></donught>
+      </div>
+    </div>
+  </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+">
+        <p class="fs-title display-block ">{{'me.stats' | translate}}</p>
+        <p class="toolbar">
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('hourly')">{{'ui.hours' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('daily')">{{'ui.day' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('weekly')">{{'ui.week' | translate}}</button> 
+          <button class="btn btn--xs btn--blue btn--raised btn--margin" lx-ripple ng-click="setStats('monthly')">{{'ui.month' | translate}}</button> 
+        </p>
+        <bars data="bar"></bars>
+      </div>
+    </div>
+  </div>
+  <div flex-item>
+    <div class="card">
+      <div class="p+ summary">
+        <p class="fs-title display-block ">{{'me.resume' | translate}}</p>
+        <span class="display-block">
+          <span><span>{{dayActivity.max}}</span>{{resume.max}}</span><span>{{'me.max' | translate}}</span>
+        </span>
+        <span class="display-block">
+          <span><span>{{dayActivity.sum}}</span>{{resume.sum}}</span><span>{{'me.sum' | translate}}</span>
+        </span>
+        <span class="display-block">
+          <span><span>{{dayActivity.average}}</span>{{resume.average}}</span><span>{{'me.average' | translate}}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -34,10 +34,11 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 
 // Passport
+/*
 app.use(session({ secret: 'nomnomnom!', cookie : { maxAge: 3600000 }, saveUninitialized: true, resave: true }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
+app.use(flash());*/
 
 app.use(function(req, res, next) {
   if (req.headers.origin) {

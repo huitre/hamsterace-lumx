@@ -2,12 +2,30 @@
 
 <div class="sidebar" ng-class="{ 'sidebar--is-shown': SideBar.isSidebarShown() }">
     <div class="sidebar-menu">
-        <ul>
-            <li>
-                <a ui-sref="ranking" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.ranking' | translate}}</a>
+        <ul class="list">
+            <li class="list-row">
+                <div class="list-row__primary">
+                    <i class="icon icon--s icon--grey icon--flat mdi mdi-account-circle"></i>
+                </div>
+                <div class="list-row__content">
+                    <a ui-sref="me" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.profil' | translate}}</a>
+                </div>
+            </li>        
+            <li class="list-row">
+                <div class="list-row__primary">
+                    <i class="icon icon--s icon--grey icon--flat mdi mdi-fire"></i>
+                </div>
+                <div class="list-row__content">
+                    <a ui-sref="feed" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.feed' | translate}}</a>
+                </div>
             </li>
-            <li>
-                <a ui-sref="me" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.profil' | translate}}</a>
+            <li class="list-row">
+                <div class="list-row__primary">
+                    <i class="icon icon--s icon--grey icon--flat mdi mdi-trophy"></i>
+                </div>
+                <div class="list-row__content">
+                    <a ui-sref="ranking" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.ranking' | translate}}</a>
+                </div>
             </li>
         </ul>
     </div>

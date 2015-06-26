@@ -1,4 +1,4 @@
-<header class="card">
+<header class="card Ranking">
   <div class="toolbar">
       <div class="toolbar__left mr+++">
           <button class="btn btn--l btn--black btn--icon" lx-ripple ng-click="SideBar.toggleSidebar()">
@@ -35,7 +35,9 @@
       <ng-include src="'views/ranking-friend.html'"></ng-include>
     </lx-tab>
 
-    <lx-tab icon="account-multiple"></lx-tab>
+    <lx-tab icon="account-multiple" ui-sref="rankingall">
+      <ng-include src="'views/ranking-all.html'"></ng-include>
+    </lx-tab>
   </lx-tabs>
   
 </header>

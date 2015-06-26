@@ -3,8 +3,8 @@
     <lx-select 
       ng-model="selects.selectedPerson" 
       placeholder="Choose" 
-      change="cbSelect.exec(newValue, oldValue)"
-      choices="rankingFriendsChoice">
+      change="cbSelect2.exec(newValue, oldValue)"
+      choices="rankingAllChoice">
         <lx-select-selected>
             {{ $selected.text }}
         </lx-select-selected>
@@ -15,7 +15,7 @@
     </lx-select>
   </div>
 <div flex-container="row" flex-gutter="24" class="main feed">
-  <div flex-item ng-repeat="rank in ranking" >
+  <div flex-item ng-repeat="rank in rankingAll | orderObjectBy:'pos.value'" >
     <ul class="list mt++ card">
       <li class="list-row list-row--multi-line list-row--has-separator">
         <div class="list-row__primary">
