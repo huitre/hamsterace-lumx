@@ -13404,7 +13404,7 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-26 11:11:13
+* @Last Modified time: 2015-06-28 22:18:40
 */
 
 'use strict';
@@ -13415,20 +13415,27 @@ function ($http, $rootScope, $q) {
   var _urls = {
     me: Config.api.url + 'me/',
     friends: Config.api.url + 'me/friends',
-    stats: Config.api.url + 'me/stats'
+    stats: Config.api.url + 'me/stats',
+    waiting: Config.api.url + 'me/request',
   }, self = {}, cStats = {data : [], time : new Date()};  
 
-  self.getBasicProfil = function (callback) {
+  self.getBasicProfil = function () {
     return $http.get(_urls.me).then(function (profil) {
       return profil.data.PersonDetails[0];
     })
   }
 
-  self.getFriends = function (callback) {
+  self.getFriends = function () {
     return $http.get(_urls.friends).then(function (friends) {
       return friends.data;
-    }
-)  }
+    })
+  }
+
+  self.getWaitingFriends = function () {
+   return $http.get(_urls.waiting).then(function (friends) {
+      return friends.data;
+    }) 
+  }
 
   self.getStats = function (type, value, $scope) {
     var url = _urls.stats;
@@ -13578,6 +13585,31 @@ function ($translate, $http, $rootScope) {
   }
   return self;
 }]);
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:58:10
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-27 15:02:46
+*/
+
+'use strict';
+
+angular.module('Hamsterace.Services').factory('UserService',
+['$http', '$rootScope', '$q',
+function ($http, $rootScope, $q) {
+  var _urls = {
+    index: Config.api.url + 'user/$id',
+    friends: Config.api.url + 'user/$id/friends',
+    followers: Config.api.url + 'user/$id/followers',
+    badges: Config.api.url + 'user/$id/badges',
+    wall: Config.api.url + 'user/$id/wall',
+    request: Config.api.url + 'user/request',
+    find: Config.api.url + 'user/find/$name'
+  }, self = {};  
+
+  
+  return self;
+}]);
 angular.module('Hamsterace').controller('FeedController',
 ['$scope', '$rootScope', '$location', 'Sidebar', 'FeedService', '$http', '$timeout',
 function ($scope, $rootScope, $location, Sidebar, FeedService, $http, $timeout) {
@@ -13659,7 +13691,7 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-26 18:42:20
+* @Last Modified time: 2015-06-27 14:37:11
 */
 
 'use strict';
@@ -13783,6 +13815,36 @@ function ($scope, Sidebar, MeService, StatsService) {
 }])
 /* 
 * @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-28 22:18:14
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('MyFriendController',
+['$rootScope', '$scope', 'Sidebar', 'MeService', 'UserService',
+function ($rootScope, $scope, Sidebar, MeService, UserService) {
+  var self = this;
+
+  $scope.title = 'ui.myfriend';
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+  (function () {
+    MeService.getFriends().then(function (data) {
+      $scope.friends = data;
+    })
+    MeService.getWaitingFriends().then(function (data) {
+      console.log(data);
+      $scope.waiting = data;
+    });
+  })()
+
+}])
+/* 
+* @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
 * @Last Modified time: 2015-06-13 10:54:06
@@ -13838,6 +13900,29 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 
 
 }])
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-27 15:43:11
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('UserController',
+['$rootScope', '$scope', 'Sidebar', 'MeService', 'UserService',
+function ($rootScope, $scope, Sidebar, MeService, UserService) {
+  var self = this;
+
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+  $scope.friends;
+
+  console.log($scope)
+
+}])
 angular.module('Hamsterace').config( 
 function($httpProvider, $stateProvider, $urlRouterProvider) {
     
@@ -13855,6 +13940,13 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'MeController'
     });
 
+    $stateProvider.state('me/friends', {
+        url: "/me/friends",
+        templateUrl: 'views/friend.html',
+        controller: 'MyFriendController'
+    });
+
+
     $stateProvider.state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
@@ -13862,10 +13954,12 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
     });
 
     $stateProvider.state('ranking', {
-        url: "/classement",
+        url: "/ranking",
         templateUrl: 'views/ranking.html',
         controller: 'RankingController'
     });
+
+
 
     // handle 403/401
     $httpProvider.interceptors.push([
@@ -13909,6 +14003,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
+    'ui.myfriend': 'My friends',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
     'ranking.sum': 'Total',
@@ -13935,6 +14030,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
+    'ui.myfriend': 'Mes amis',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
     'ranking.sum': 'Total',

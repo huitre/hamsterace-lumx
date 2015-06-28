@@ -15,6 +15,13 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'MeController'
     });
 
+    $stateProvider.state('me/friends', {
+        url: "/me/friends",
+        templateUrl: 'views/friend.html',
+        controller: 'MyFriendController'
+    });
+
+
     $stateProvider.state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
@@ -22,10 +29,12 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
     });
 
     $stateProvider.state('ranking', {
-        url: "/classement",
+        url: "/ranking",
         templateUrl: 'views/ranking.html',
         controller: 'RankingController'
     });
+
+
 
     // handle 403/401
     $httpProvider.interceptors.push([
@@ -69,6 +78,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
+    'ui.myfriend': 'My friends',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
     'ranking.sum': 'Total',
@@ -95,6 +105,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
+    'ui.myfriend': 'Mes amis',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
     'ranking.sum': 'Total',

@@ -5849,9 +5849,6 @@ textarea.text-field__input {
   -ms-transform: scale(3) translateX(-50%);
   transform: scale(3) translateX(-50%); }
 
-body {
-  font-size: 12px; }
-
 .mui-tabs-container .mui-tab-item-container {
   position: fixed;
   z-index: 9;
@@ -6026,7 +6023,7 @@ header {
     margin: auto; }
   #home #form-wrapper {
     position: relative;
-    width: 19%;
+    width: 24%;
     padding: 2em;
     margin: 13em auto auto;
     min-width: 21em;
@@ -6059,6 +6056,32 @@ header {
 
   #home #img-header {
     top: 15em; }
+ }
+
+@media screen and (max-width: 6in) {
+  section#content section {
+    width: 95%; }
+ }
+
+@media screen and (max-width: 6in) {
+  body {
+    overflow-x: hidden; }
+
+  #home #form-wrapper {
+    width: 65%; }
+
+  #home #img-header {
+    width: 16%; }
+
+  svg#title {
+    width: 165%;
+    left: -32.5%;
+    top: 0%; }
+ }
+
+@media screen and (max-width: 10.1in) {
+  #home #form-wrapper {
+    width: 36%; }
  }
 
 .Me article {
@@ -6113,11 +6136,11 @@ header {
 .Me .summary span span:first-child {
   color: #2196f3;
   letter-spacing: -1.5px;
-  font-size: 2.7em;
+  font-size: 2.3em;
   margin-right: 6px;
   text-align: right; }
 .Me .summary span span:last-child {
-  font-size: 1.3em;
+  font-size: 1em;
   letter-spacing: -1px;
   color: #818181; }
 .Me .summary span span:first-child span {
@@ -6207,7 +6230,17 @@ header {
   margin: auto; }
 .feed .list-row--first-post {
   box-shadow: 1px 1px 13px rgba(86, 52, 44, 0.18); }
+.feed .card {
+  margin: 8px; }
 
+@media screen and (min-width: 10.11in) {
+  .feed.main {
+    padding-left: 272px !important; }
+ }
+
+/*
+ * This file contain all the top level layout of the app
+ */
 .main {
   z-index: 2;
   padding: 8px; }
@@ -6236,28 +6269,7 @@ header.card {
 .btn.btn--margin {
   margin-right: 4px; }
 
-@media screen and (max-width: 6in) {
-  section#content section {
-    width: 95%; }
- }
-
-@media screen and (max-width: 6in) {
-  body {
-    overflow-x: hidden; }
-
-  #home #form-wrapper {
-    width: 65%; }
-
-  #home #img-header {
-    width: 16%; }
-
-  svg#title {
-    width: 165%;
-    left: -32.5%;
-    top: 0%; }
- }
-
-@media screen and (max-width: 10.1in) {
-  #home #form-wrapper {
-    width: 36%; }
+@media screen and (min-width: 10.1in) {
+  header.card {
+    padding-left: 260px !important; }
  }

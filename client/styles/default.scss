@@ -1,3 +1,7 @@
+/*
+ * This file contain all the top level layout of the app
+ */
+
 .main {
   z-index: 2;
   padding: 8px;
@@ -10,6 +14,7 @@
 .main.top-- {
   padding-top: 104px;
 }
+
 
 div.top--, .main.top-- {
   padding-top: 64px;
@@ -29,3 +34,4 @@ header.card {
 
 .inline-block {display: inline-block;}
 .btn.btn--margin {margin-right: 4px}
+

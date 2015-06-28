@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-26 11:11:13
+* @Last Modified time: 2015-06-28 22:18:40
 */
 
 'use strict';
@@ -13,20 +13,27 @@ function ($http, $rootScope, $q) {
   var _urls = {
     me: Config.api.url + 'me/',
     friends: Config.api.url + 'me/friends',
-    stats: Config.api.url + 'me/stats'
+    stats: Config.api.url + 'me/stats',
+    waiting: Config.api.url + 'me/request',
   }, self = {}, cStats = {data : [], time : new Date()};  
 
-  self.getBasicProfil = function (callback) {
+  self.getBasicProfil = function () {
     return $http.get(_urls.me).then(function (profil) {
       return profil.data.PersonDetails[0];
     })
   }
 
-  self.getFriends = function (callback) {
+  self.getFriends = function () {
     return $http.get(_urls.friends).then(function (friends) {
       return friends.data;
-    }
-)  }
+    })
+  }
+
+  self.getWaitingFriends = function () {
+   return $http.get(_urls.waiting).then(function (friends) {
+      return friends.data;
+    }) 
+  }
 
   self.getStats = function (type, value, $scope) {
     var url = _urls.stats;
