@@ -1,12 +1,19 @@
 <ng-include src="'views/appbar.html'"></ng-include>
 <ng-include src="'views/sidebar.html'"></ng-include>
-<div flex-container="row" flex-gutter="12" class="feed" flex-wrap>
+<div flex-container="row" flex-gutter="24" class="feed" flex-wrap>
   <div flex-item="6" class="top--">
-    <div style="margin: 8px;">
-      <span class="fs-title display-block mb">{{'ui.myfriendwaiting' | translate}}</span>
-      <div class="divider divider--dark"></div>
-    </div>
     <ul class="list mt++ card">
+      <li>
+        <div style="margin: 16px;">
+          <span class="fs-title display-block mb">{{'ui.myfriendwaiting' | translate}}</span>
+          <div class="divider divider--dark"></div>
+        </div>
+      </li>
+      <li class="list-row list-row--multi-line list-row--has-separator" ng-show="waiting">
+        <div class="list-row__primary">
+          {{'ui.notfriendrequest' | translate}}
+        </div>
+      </li>
       <li class="list-row list-row--multi-line list-row--has-separator" ng-repeat="friend in waiting" >
         <div class="list-row__primary">
             <div class="img-round" style="background-image: url({{friend.avatar.resource}})"/>
@@ -18,20 +25,27 @@
             <span class="display-block fs-body-1 tc-black-2">{{friend.age}}</span>
         </div>
 
-        <div class="list-row__secondary">
-            <i class="icon icon--xs icon--grey icon--flat mdi mdi-information"></i>
+        <div class="list-row__action">
+          <button class="btn btn--m btn--blue btn--fab" lx-ripple>
+            <i class="mdi mdi-account-plus" ng-click="acceptFriend(friend.id)"></i>
+          </button>
+          <button class="btn btn--m btn--red btn--fab" lx-ripple>
+            <i class="mdi mdi-account-remove" ng-click="refuseFriend(friend.id)"></i>
+          </button>
         </div>
 
         <div>
         </div>
       </li>
     </ul>
-    <div style="margin: 8px;">
-      <span class="fs-title display-block mb">{{'ui.myfriend' | translate}}</span>
-      <div class="divider divider--dark"></div>
-    </div>
     <ul class="list mt++ card">
-      <li class="list-row list-row--multi-line list-row--has-separator" ng-repeat="friend in friends" >
+      <li>
+        <div style="margin: 16px;">
+          <span class="fs-title display-block mb">{{'ui.myfriend' | translate}}</span>
+          <div class="divider divider--dark"></div>
+        </div>
+      </li>
+      <li class="list-row list-row--multi-line list-row--has-separator" ng-repeat="friend in friends" lx-ripple>
         <div class="list-row__primary">
             <div class="img-round" style="background-image: url({{friend.avatar.resource}})"/>
         </div>
@@ -43,7 +57,9 @@
         </div>
 
         <div class="list-row__secondary">
-            <i class="icon icon--xs icon--grey icon--flat mdi mdi-information"></i>
+            <button class="btn btn--m btn--red btn--fab" lx-ripple>
+            <i class="mdi mdi-account-remove" ng-click="deleteFriend(friend.id)"></i>
+          </button>
         </div>
 
         <div>

@@ -13404,7 +13404,7 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-28 22:18:40
+* @Last Modified time: 2015-07-05 20:04:25
 */
 
 'use strict';
@@ -13417,6 +13417,10 @@ function ($http, $rootScope, $q) {
     friends: Config.api.url + 'me/friends',
     stats: Config.api.url + 'me/stats',
     waiting: Config.api.url + 'me/request',
+    accept: Config.api.url + 'me/accept',
+    refuse: Config.api.url + 'me/refuse',
+    remove: Config.api.url + 'me/remove'
+
   }, self = {}, cStats = {data : [], time : new Date()};  
 
   self.getBasicProfil = function () {
@@ -13432,7 +13436,25 @@ function ($http, $rootScope, $q) {
   }
 
   self.getWaitingFriends = function () {
-   return $http.get(_urls.waiting).then(function (friends) {
+    return $http.get(_urls.waiting).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.acceptFriend = function (id) {
+    return $http.post(_urls.accept + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.deleteFriend = function (id) {
+    return $http.post(_urls.remove + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.refuseFriend = function (id) {
+    return $http.post(_urls.refuse + '/' + id).then(function (friends) {
       return friends.data;
     }) 
   }
@@ -13817,14 +13839,14 @@ function ($scope, Sidebar, MeService, StatsService) {
 * @Author: huitre
 * @Date:   2015-06-27 14:38:20
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-28 22:18:14
+* @Last Modified time: 2015-07-05 19:59:40
 */
 
 'use strict';
  
 angular.module('Hamsterace').controller('MyFriendController',
-['$rootScope', '$scope', 'Sidebar', 'MeService', 'UserService',
-function ($rootScope, $scope, Sidebar, MeService, UserService) {
+['$scope', 'Sidebar', 'MeService', 'UserService', 'LxNotificationService', '$translate',
+function ($scope, Sidebar, MeService, UserService, LxNotificationService, $translate) {
   var self = this;
 
   $scope.title = 'ui.myfriend';
@@ -13837,10 +13859,61 @@ function ($rootScope, $scope, Sidebar, MeService, UserService) {
       $scope.friends = data;
     })
     MeService.getWaitingFriends().then(function (data) {
-      console.log(data);
       $scope.waiting = data;
     });
   })()
+
+  this.filterWaiting = function (id) {
+    $scope.waiting = $scope.waiting.filter(function (el, i) {
+      if (el.id != id) {
+        return true;
+      }
+    })
+  }
+
+  $scope.deleteFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.deleteFriend(id).then(function (data) {
+            $scope.friends = $scope.friends.filter(function (el, i) {
+              if (el.id != id) {
+                return true;
+              }
+            })
+          })
+        }
+      }
+    );
+  }
+
+  $scope.acceptFriend = function (id) {
+    MeService.acceptFriend(id).then(function (data) {
+      var obj = data.pop(),
+          idx = 0;
+
+      self.filterWaiting(id);
+      $scope.friends.push(obj);
+    })
+  }
+
+  $scope.refuseFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.refuseFriend(id).then(function (data) {
+            self.filterWaiting(data.id);
+          })
+        }
+      }
+    );
+  }
 
 }])
 /* 

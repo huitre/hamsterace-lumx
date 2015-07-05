@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-28 22:18:40
+* @Last Modified time: 2015-07-05 20:04:25
 */
 
 'use strict';
@@ -15,6 +15,10 @@ function ($http, $rootScope, $q) {
     friends: Config.api.url + 'me/friends',
     stats: Config.api.url + 'me/stats',
     waiting: Config.api.url + 'me/request',
+    accept: Config.api.url + 'me/accept',
+    refuse: Config.api.url + 'me/refuse',
+    remove: Config.api.url + 'me/remove'
+
   }, self = {}, cStats = {data : [], time : new Date()};  
 
   self.getBasicProfil = function () {
@@ -30,7 +34,25 @@ function ($http, $rootScope, $q) {
   }
 
   self.getWaitingFriends = function () {
-   return $http.get(_urls.waiting).then(function (friends) {
+    return $http.get(_urls.waiting).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.acceptFriend = function (id) {
+    return $http.post(_urls.accept + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.deleteFriend = function (id) {
+    return $http.post(_urls.remove + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.refuseFriend = function (id) {
+    return $http.post(_urls.refuse + '/' + id).then(function (friends) {
       return friends.data;
     }) 
   }
