@@ -13208,22 +13208,33 @@ function ($timeout) {
     restrict : 'E',
     replace : true,
     link : function (scope, element, attrs) {
-      $timeout(function () {
-        var videoType = function (src) {
-          var type = [
-                /.*youtube*/,
-                /.*vimeo*/
+      var videoType = function (src) {
+          var replace = {
+              youtube : function (src, html) {
+                return html.replace('{{src}}', src)
+              },
+              html5 : function (src, html) {
+                return html.replace('{{src}}', src)
+              }
+            }, type = [
+                { rx : /.*youtube*/, type : 'youtube' },
+                { rx : /.*vimeo*/, type : 'vimeo' },
+                { rx : /.*(mp4|ogg)*/, type : 'html5' }
               ], code = [
-                '<iframe width="1280" height="750" src="https://www.youtube.com/embed/gDhbpZmhMC4" frameborder="0" allowfullscreen></iframe>',
-                '<iframe src="{{src}}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
-              ]
+                '<iframe width="100%" src="{{src}}" frameborder="0" allowfullscreen></iframe>',
+                '<iframe src="{{src}}" width="100%" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+                '<video src="{{src}}" style="width: 100%" controls></video>'
+              ];
+
           for (var i in type) {
-            if (src.match(type[i]))
-              return code[i]
+            if (src.match(type[i].rx)) {
+              return replace[type[i].type](src, code[i]);
+            }
           }
           return '<video src="' + src + '" style="width: 100%" controls></video>';
         }
-        element[0].innerHTML = videoType(element[0].innerText)
+      $timeout(function () {
+        element[0].innerHTML = videoType(element[0].innerText);
       })
     }
   }
@@ -13995,6 +14006,87 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 * @Author: huitre
 * @Date:   2015-06-27 14:38:20
 * @Last Modified by:   huitre
+* @Last Modified time: 2015-07-05 19:59:40
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('TeamsController',
+['$scope', 'Sidebar', 'MeService', 'UserService', 'LxNotificationService', '$translate',
+function ($scope, Sidebar, MeService, UserService, LxNotificationService, $translate) {
+  var self = this;
+
+  $scope.title = 'ui.teams';
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+  (function () {
+    MeService.getFriends().then(function (data) {
+      $scope.friends = data;
+    })
+    MeService.getWaitingFriends().then(function (data) {
+      $scope.waiting = data;
+    });
+  })()
+
+  this.filterWaiting = function (id) {
+    $scope.waiting = $scope.waiting.filter(function (el, i) {
+      if (el.id != id) {
+        return true;
+      }
+    })
+  }
+
+  $scope.deleteFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.deleteFriend(id).then(function (data) {
+            $scope.friends = $scope.friends.filter(function (el, i) {
+              if (el.id != id) {
+                return true;
+              }
+            })
+          })
+        }
+      }
+    );
+  }
+
+  $scope.acceptFriend = function (id) {
+    MeService.acceptFriend(id).then(function (data) {
+      var obj = data.pop(),
+          idx = 0;
+
+      self.filterWaiting(id);
+      $scope.friends.push(obj);
+    })
+  }
+
+  $scope.refuseFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.refuseFriend(id).then(function (data) {
+            self.filterWaiting(data.id);
+          })
+        }
+      }
+    );
+  }
+
+}])
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
 * @Last Modified time: 2015-06-27 15:43:11
 */
 
@@ -14037,7 +14129,6 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'MyFriendController'
     });
 
-
     $stateProvider.state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
@@ -14050,7 +14141,11 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'RankingController'
     });
 
-
+    $stateProvider.state('teams', {
+        url: "/teams",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    });
 
     // handle 403/401
     $httpProvider.interceptors.push([

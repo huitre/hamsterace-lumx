@@ -21,7 +21,6 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'MyFriendController'
     });
 
-
     $stateProvider.state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
@@ -34,7 +33,11 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         controller: 'RankingController'
     });
 
-
+    $stateProvider.state('teams', {
+        url: "/teams",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    });
 
     // handle 403/401
     $httpProvider.interceptors.push([
