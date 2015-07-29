@@ -1,0 +1,35 @@
+<hra-overflow style="padding: 8px; background-color: #fafafa">
+   	<div class="card" ng-if="!team">
+            <div class="p+">
+                <strong class="fs-headline display-block">{{ 'ui.team.title.empty' | translate}}</strong>
+                <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.subtitle.empty' | translate}}</span>
+
+                <div class="paragraph fs-body-1 mt+">
+                    <p>
+                        {{ 'ui.team.message.empty' | translate}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div style="right: 16px;bottom: 16px;position: absolute;">
+        	<button class="btn btn--xl btn--blue btn--fab" lx-ripple ><i class="mdi mdi-plus"></i></button>
+        </div>
+    </div>
+    <section ng-if="foundTeams">>
+    	<div class="card" ng-repeat="team in foundTeams">
+            <div class="p+">
+                <strong class="fs-headline display-block">{{ team.name }}</strong>
+                <span class="fs-subhead tc-black-2 display-block">{{ team.slogan}}</span>
+                <div class="paragraph fs-body-1 mt+">
+                    <p>
+                        {{ 'ui.team.message.empty' | translate}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div style="right: 16px;bottom: 16px;position: absolute;">
+        	<button class="btn btn--xl btn--blue btn--fab" lx-ripple ><i class="mdi mdi-plus"></i></button>
+        </div>
+    </div>
+    </section>
+</hra-overflow>

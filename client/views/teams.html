@@ -1,4 +1,5 @@
-<header class="card Ranking">
+<ng-include src="'views/sidebar.html'"></ng-include>
+<header class="card">
   <div class="toolbar">
       <div class="toolbar__left mr+++">
           <button class="btn btn--l btn--black btn--icon" lx-ripple ng-click="SideBar.toggleSidebar()">
@@ -9,7 +10,7 @@
       <span class="toolbar__label fs-title">{{title | translate}}</span>
 
       <div class="toolbar__right">
-          <lx-search-filter closed theme="light"></lx-search-filter>
+          <lx-search-filter closed theme="light" model="searchTeams"></lx-search-filter>
 
           <lx-dropdown position="right" from-top>
               <button class="btn btn--l btn--black btn--icon" lx-ripple lx-dropdown-toggle>
@@ -32,11 +33,11 @@
   
   <lx-tabs>
     <lx-tab icon="account-multiple">
-      <ng-include src="'views/ranking-friend.html'"></ng-include>
+      <ng-include src="'views/teams-details.html'"></ng-include>
     </lx-tab>
 
     <lx-tab icon="trophy" ui-sref="rankingall">
-      <ng-include src="'views/ranking-all.html'"></ng-include>
+      <ng-include src="'views/teams-members.html'"></ng-include>
     </lx-tab>
   </lx-tabs>
   

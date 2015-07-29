@@ -8,8 +8,8 @@
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$scope', 'Sidebar', 'MeService', 'UserService', 'LxNotificationService', '$translate',
-function ($scope, Sidebar, MeService, UserService, LxNotificationService, $translate) {
+['$scope', 'Sidebar', 'TeamService', 'LxNotificationService', '$translate',
+function ($scope, Sidebar, TeamService, UserService, LxNotificationService, $translate) {
   var self = this;
 
   $scope.title = 'ui.teams';
@@ -17,65 +17,14 @@ function ($scope, Sidebar, MeService, UserService, LxNotificationService, $trans
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
 
-  (function () {
-    MeService.getFriends().then(function (data) {
-      $scope.friends = data;
-    })
-    MeService.getWaitingFriends().then(function (data) {
-      $scope.waiting = data;
-    });
-  })()
+  $scope.$watch('searchTeams', function(newValue, oldValue) {
+    console.log(newValue, oldValue)
+    if (newValue != oldValue && newValue)
+      TeamService.getTeamByName(newValue).then(function (team) {
+        console.log(team)
+        $scope.foundTeams = team;
+      })
+    }, true);
 
-  this.filterWaiting = function (id) {
-    $scope.waiting = $scope.waiting.filter(function (el, i) {
-      if (el.id != id) {
-        return true;
-      }
-    })
-  }
-
-  $scope.deleteFriend = function (id) {
-    LxNotificationService.confirm(
-      '',
-      $translate.instant('ui.confirm.delete'),
-      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
-      function(answer) {
-        if (answer) {
-          MeService.deleteFriend(id).then(function (data) {
-            $scope.friends = $scope.friends.filter(function (el, i) {
-              if (el.id != id) {
-                return true;
-              }
-            })
-          })
-        }
-      }
-    );
-  }
-
-  $scope.acceptFriend = function (id) {
-    MeService.acceptFriend(id).then(function (data) {
-      var obj = data.pop(),
-          idx = 0;
-
-      self.filterWaiting(id);
-      $scope.friends.push(obj);
-    })
-  }
-
-  $scope.refuseFriend = function (id) {
-    LxNotificationService.confirm(
-      '',
-      $translate.instant('ui.confirm.delete'),
-      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
-      function(answer) {
-        if (answer) {
-          MeService.refuseFriend(id).then(function (data) {
-            self.filterWaiting(data.id);
-          })
-        }
-      }
-    );
-  }
 
 }])
