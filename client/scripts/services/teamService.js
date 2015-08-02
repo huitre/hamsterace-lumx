@@ -10,19 +10,41 @@
 angular.module('Hamsterace.Services').factory('TeamService',
 ['$http', '$rootScope', '$q',
 function ($http, $rootScope, $q) {
+  var url = Config.api.url + 'team/';
   var _urls = {
-    exists: Config.api.url + 'team/by'
-
+    exists: url + 'by',
+    request: url + ':id/request',
+    teams: url + '',
+    mine: url + 'mine',
   }, self = {}, cStats = {data : [], time : new Date()};  
 
-  self.getTeamByName = function (name) {
-    return $http.get(_urls.exists + '/' + name).then(function (team) {
-    	if (team.hasOwnProperty('data'))
-      	return team.data;
+  self.get = function (url, data) {
+    return $http.get(url, data).then(function (team) {
+      if (team.hasOwnProperty('data'))
+        return team.data;
       return [];
     })
   }
 
- 
+  self.getTeamByName = function (name) {
+    return self.get(_urls.exists + '/' + name);
+  };
+
+	self.requestInvitation = function (teamId) {
+    return $http.post(_urls.request.replace(':id', teamId)).then(function (team) {
+    	if (team.hasOwnProperty('data'))
+      	return team.data;
+      return [];
+    })
+  };
+
+  self.getTeams = function (offset) {
+    return self.get(_urls.teams);
+  }
+
+  self.getMine = function (offset) {
+    return self.get(_urls.mine);
+  }
+
   return self;
 }]);

@@ -1,0 +1,24 @@
+<section class="top-- feed main" flex-container="row" flex-gutter="24" flex-wrap>
+    <div class="card" ng-repeat="t in team">
+        <div class="p+">
+            <strong class="fs-headline display-block" >{{ t.name }}</strong>
+            <span class="fs-subhead tc-black-2 display-block">{{ t.slogan }}</span>
+            <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.recrut' | translate }} : {{ t.recruit }}</span>
+            <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.max' | translate }} : {{ t.max ? t.max : '500'}}</span>
+            <div class="paragraph fs-body-1 mt+">
+                <div ng-repeat="member in t.members">
+                    <a href="user/{{member.id}}">
+                        <img  class="inline-block" height="90" width="90" src="{{member.avatar.src}}"/>
+                        <p class="tc-black-2 fs-subhead inline-block">{{member.status}}</p>
+                        <p class="tc-black-2 fs-subhead inline-block">{{member.firstname}}</p>
+                        <p class="tc-black-2 fs-subhead inline-block">{{member.name}}</p>
+                        <p class="tc-black-2 fs-subhead inline-block">{{member.createdAt}}</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="right: 16px;bottom: 16px;position: absolute;">
+      <button class="btn btn--xl btn--blue btn--fab" lx-ripple><i class="mdi mdi-plus"></i></button>
+    </div>
+</section>

@@ -13251,6 +13251,7 @@ angular.module('Hamsterace').directive('hraOverflow', ['$document',
       })
     }
     return {
+      scope : false,
       link: link
     }
   }
@@ -13648,20 +13649,42 @@ function ($translate, $http, $rootScope) {
 angular.module('Hamsterace.Services').factory('TeamService',
 ['$http', '$rootScope', '$q',
 function ($http, $rootScope, $q) {
+  var url = Config.api.url + 'team/';
   var _urls = {
-    exists: Config.api.url + 'team/by'
-
+    exists: url + 'by',
+    request: url + ':id/request',
+    teams: url + '',
+    mine: url + 'mine',
   }, self = {}, cStats = {data : [], time : new Date()};  
 
-  self.getTeamByName = function (name) {
-    return $http.get(_urls.exists + '/' + name).then(function (team) {
-    	if (team.hasOwnProperty('data'))
-      	return team.data;
+  self.get = function (url, data) {
+    return $http.get(url, data).then(function (team) {
+      if (team.hasOwnProperty('data'))
+        return team.data;
       return [];
     })
   }
 
- 
+  self.getTeamByName = function (name) {
+    return self.get(_urls.exists + '/' + name);
+  };
+
+	self.requestInvitation = function (teamId) {
+    return $http.post(_urls.request.replace(':id', teamId)).then(function (team) {
+    	if (team.hasOwnProperty('data'))
+      	return team.data;
+      return [];
+    })
+  };
+
+  self.getTeams = function (offset) {
+    return self.get(_urls.teams);
+  }
+
+  self.getMine = function (offset) {
+    return self.get(_urls.mine);
+  }
+
   return self;
 }]);
 /* 
@@ -13911,6 +13934,10 @@ function ($scope, Sidebar, MeService, UserService, LxNotificationService, $trans
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
 
+  $scope.$watch('search.terms', function(newValue, oldValue) {
+    debugger;
+  });
+
   (function () {
     MeService.getFriends().then(function (data) {
       $scope.friends = data;
@@ -14040,25 +14067,45 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$scope', 'Sidebar', 'TeamService', 'LxNotificationService', '$translate',
-function ($scope, Sidebar, TeamService, UserService, LxNotificationService, $translate) {
+['$scope', 'Sidebar', 'TeamService', '$translate',
+function ($scope, Sidebar, TeamService, $translate) {
   var self = this;
 
   $scope.title = 'ui.teams';
   // main template dependency
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
+  $scope.request = {};
+  $scope.search = { term: '' };
+  $scope.user = {};
 
-  $scope.$watch('searchTeams', function(newValue, oldValue) {
-    console.log(newValue, oldValue)
+  $scope.$watch('search.term', function(newValue, oldValue) {
     if (newValue != oldValue && newValue)
       TeamService.getTeamByName(newValue).then(function (team) {
-        console.log(team)
         $scope.foundTeams = team;
       })
     }, true);
-
-
+  
+  $scope.makeRequest = function (teamId) {
+    if (teamId) {
+      TeamService.requestInvitation(teamId).then(function (r) {
+        if (r)
+          $scope.request[teamId] = true;
+      })
+    }
+  }
+  
+  TeamService.getMine().then(function (team) {
+    if (team) {
+      $scope.user.hasteam = true;
+      $scope.team = team;
+      console.log(team);
+    } else {
+      TeamService.getTeams().then(function (teams) {
+        $scope.foundTeams = teams
+      });
+    }
+  });
 }])
 /* 
 * @Author: huitre

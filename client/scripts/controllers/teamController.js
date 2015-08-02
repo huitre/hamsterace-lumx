@@ -8,23 +8,43 @@
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$scope', 'Sidebar', 'TeamService', 'LxNotificationService', '$translate',
-function ($scope, Sidebar, TeamService, UserService, LxNotificationService, $translate) {
+['$scope', 'Sidebar', 'TeamService', '$translate',
+function ($scope, Sidebar, TeamService, $translate) {
   var self = this;
 
   $scope.title = 'ui.teams';
   // main template dependency
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
+  $scope.request = {};
+  $scope.search = { term: '' };
+  $scope.user = {};
 
-  $scope.$watch('searchTeams', function(newValue, oldValue) {
-    console.log(newValue, oldValue)
+  $scope.$watch('search.term', function(newValue, oldValue) {
     if (newValue != oldValue && newValue)
       TeamService.getTeamByName(newValue).then(function (team) {
-        console.log(team)
         $scope.foundTeams = team;
       })
     }, true);
-
-
+  
+  $scope.makeRequest = function (teamId) {
+    if (teamId) {
+      TeamService.requestInvitation(teamId).then(function (r) {
+        if (r)
+          $scope.request[teamId] = true;
+      })
+    }
+  }
+  
+  TeamService.getMine().then(function (team) {
+    if (team) {
+      $scope.user.hasteam = true;
+      $scope.team = team;
+      console.log(team);
+    } else {
+      TeamService.getTeams().then(function (teams) {
+        $scope.foundTeams = teams
+      });
+    }
+  });
 }])

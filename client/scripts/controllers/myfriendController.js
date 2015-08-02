@@ -17,6 +17,10 @@ function ($scope, Sidebar, MeService, UserService, LxNotificationService, $trans
   $scope.SideBar = Sidebar;
   $scope.dataLoading = true;
 
+  $scope.$watch('search.terms', function(newValue, oldValue) {
+    debugger;
+  });
+
   (function () {
     MeService.getFriends().then(function (data) {
       $scope.friends = data;
