@@ -16,6 +16,11 @@ function ($http, $rootScope, $q) {
     request: url + ':id/request',
     teams: url + '',
     mine: url + 'mine',
+    rm: url + 'team/:id/members/remove',
+    ok: url + 'team/:id/request/accept',
+    wall: url + 'team/:id/wall',
+    badges: url + 'team/:id/badges',
+    stats: url + 'team/:id/stats'
   }, self = {}, cStats = {data : [], time : new Date()};  
 
   self.get = function (url, data) {
@@ -38,12 +43,31 @@ function ($http, $rootScope, $q) {
     })
   };
 
+  self.getPendingUsers = function (teamId) {
+    return self.get(_urls.request.replace(':id', teamId));
+  }
+
   self.getTeams = function (offset) {
     return self.get(_urls.teams);
   }
 
   self.getMine = function (offset) {
-    return self.get(_urls.mine);
+    var me = $rootScope.User;
+    return self.get(_urls.mine).then(function (team) {
+      var findIndex = function (members) {
+        for (var i = members.length - 1; i; --i) {
+          if (members[i].id == me.id)
+            return i;
+          return -1;
+        }
+      }, index = findIndex(team.members);
+      team.owner = team.members.shift();
+      team.me = null;
+      if (index > -1 && team.owner.id != me.id) {
+        team.me = team.members.splice(index, 1);
+      }
+      return team;
+    })
   }
 
   return self;

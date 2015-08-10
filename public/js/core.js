@@ -13309,18 +13309,11 @@ angular.module('Hamsterace.Services').factory('AuthenticationService',
       setLoggedIn: function(bool) {
         sdo.isLoggedIn = bool;
       },
-      setCredentials:function (username, password) {
-          var authdata = Base64.encode(username + ':' + password);
-
-          $rootScope.globals = {
-              currentUser: {
-                  username: username,
-                  authdata: authdata
-              }
-          };
+      setCredentials:function (request) {
+          $rootScope.User = request.data;
 
           //$http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
-          $cookieStore.put('globals', $rootScope.globals);
+          $cookieStore.put('user', $rootScope.User);
       },
       clearCredentials: function () {
           $rootScope.globals = {};
@@ -13455,7 +13448,7 @@ function ($http, $rootScope, $q) {
 
   self.getBasicProfil = function () {
     return $http.get(_urls.me).then(function (profil) {
-      return profil.data.PersonDetails[0];
+      return profil.data.PersonDetail;
     })
   }
 
@@ -13655,6 +13648,11 @@ function ($http, $rootScope, $q) {
     request: url + ':id/request',
     teams: url + '',
     mine: url + 'mine',
+    rm: url + 'team/:id/members/remove',
+    ok: url + 'team/:id/request/accept',
+    wall: url + 'team/:id/wall',
+    badges: url + 'team/:id/badges',
+    stats: url + 'team/:id/stats'
   }, self = {}, cStats = {data : [], time : new Date()};  
 
   self.get = function (url, data) {
@@ -13677,12 +13675,31 @@ function ($http, $rootScope, $q) {
     })
   };
 
+  self.getPendingUsers = function (teamId) {
+    return self.get(_urls.request.replace(':id', teamId));
+  }
+
   self.getTeams = function (offset) {
     return self.get(_urls.teams);
   }
 
   self.getMine = function (offset) {
-    return self.get(_urls.mine);
+    var me = $rootScope.User;
+    return self.get(_urls.mine).then(function (team) {
+      var findIndex = function (members) {
+        for (var i = members.length - 1; i; --i) {
+          if (members[i].id == me.id)
+            return i;
+          return -1;
+        }
+      }, index = findIndex(team.members);
+      team.owner = team.members.shift();
+      team.me = null;
+      if (index > -1 && team.owner.id != me.id) {
+        team.me = team.members.splice(index, 1);
+      }
+      return team;
+    })
   }
 
   return self;
@@ -14067,8 +14084,8 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$scope', 'Sidebar', 'TeamService', '$translate',
-function ($scope, Sidebar, TeamService, $translate) {
+['$stateParams', '$scope', 'Sidebar', 'TeamService', '$translate',
+function ($stateParams, $scope, Sidebar, TeamService, $translate) {
   var self = this;
 
   $scope.title = 'ui.teams';
@@ -14099,13 +14116,17 @@ function ($scope, Sidebar, TeamService, $translate) {
     if (team) {
       $scope.user.hasteam = true;
       $scope.team = team;
-      console.log(team);
+      TeamService.getPendingUsers(team.id).then(function (users) {
+        $scope.pending = users;
+      })
     } else {
       TeamService.getTeams().then(function (teams) {
         $scope.foundTeams = teams
       });
     }
+    $scope.dataLoading = false;
   });
+
 }])
 /* 
 * @Author: huitre
@@ -14139,34 +14160,32 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         url: "/",
         templateUrl: 'views/home.html',
         controller: 'LoginController'
-    });
-
-    $stateProvider.state('me', {
+    }).state('me', {
         url: "/me",
         templateUrl: 'views/me.html',
         controller: 'MeController'
-    });
-
-    $stateProvider.state('me/friends', {
+    }).state('me/friends', {
         url: "/me/friends",
         templateUrl: 'views/friend.html',
         controller: 'MyFriendController'
-    });
-
-    $stateProvider.state('feed', {
+    }).state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
         controller: 'FeedController'
-    });
-
-    $stateProvider.state('ranking', {
+    }).state('ranking', {
         url: "/ranking",
         templateUrl: 'views/ranking.html',
         controller: 'RankingController'
-    });
-
-    $stateProvider.state('teams', {
+    }).state('user', {
+        url: "/user/:id",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams', {
         url: "/teams",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams/edit', {
+        url: "/teams/edit/:id",
         templateUrl: 'views/teams.html',
         controller: 'TeamsController'
     });
@@ -14178,7 +14197,7 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         return {
            'responseError': function(rejection) {
                 if (rejection.status === 403 || rejection.status === 401) {
-                    $rootScope.globals.currentUser = null;
+                    $rootScope.User = null;
                     $location.path('/');
                 }
                 return $q.reject(rejection);
@@ -14189,11 +14208,11 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
-    $rootScope.globals = $cookieStore.get('globals') || {};
+    $rootScope.User = $cookieStore.get('user') || {};
     
     $rootScope.$on('$locationChangeStart', function (event, next, current) {
         // redirect to login page if not logged in
-        if ($location.path() !== '/' && !$rootScope.globals.currentUser) {
+        if ($location.path() !== '/' && !$rootScope.User) {
             $location.path('/');
         }
     });

@@ -23,7 +23,7 @@ function ($http, $rootScope, $q) {
 
   self.getBasicProfil = function () {
     return $http.get(_urls.me).then(function (profil) {
-      return profil.data.PersonDetails[0];
+      return profil.data.PersonDetail;
     })
   }
 

@@ -1,24 +1,134 @@
-<section class="top-- feed main" flex-container="row" flex-gutter="24" flex-wrap>
-    <div class="card" ng-repeat="t in team">
-        <div class="p+">
-            <strong class="fs-headline display-block" >{{ t.name }}</strong>
-            <span class="fs-subhead tc-black-2 display-block">{{ t.slogan }}</span>
-            <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.recrut' | translate }} : {{ t.recruit }}</span>
-            <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.max' | translate }} : {{ t.max ? t.max : '500'}}</span>
-            <div class="paragraph fs-body-1 mt+">
-                <div ng-repeat="member in t.members">
-                    <a href="user/{{member.id}}">
-                        <img  class="inline-block" height="90" width="90" src="{{member.avatar.src}}"/>
-                        <p class="tc-black-2 fs-subhead inline-block">{{member.status}}</p>
-                        <p class="tc-black-2 fs-subhead inline-block">{{member.firstname}}</p>
-                        <p class="tc-black-2 fs-subhead inline-block">{{member.name}}</p>
-                        <p class="tc-black-2 fs-subhead inline-block">{{member.createdAt}}</p>
-                    </a>
+<header class="card Ranking">
+  <div class="toolbar">
+      <div class="toolbar__left mr+++">
+          <button class="btn btn--l btn--black btn--icon" lx-ripple ng-click="SideBar.toggleSidebar()">
+              <i class="mdi mdi-menu"></i>
+          </button>
+      </div>
+
+      <span class="toolbar__label fs-title">{{title | translate}}</span>
+
+      <div class="toolbar__right">
+          <lx-search-filter closed theme="light"></lx-search-filter>
+
+          <lx-dropdown position="right" from-top>
+              <button class="btn btn--l btn--black btn--icon" lx-ripple lx-dropdown-toggle>
+                  <i class="mdi mdi-dots-vertical"></i>
+              </button>
+
+              <lx-dropdown-menu>
+                  <ul>
+                      <li><a class="dropdown-link">Action</a></li>
+                      <li><a class="dropdown-link">Another action</a></li>
+                      <li><a class="dropdown-link">Something else here</a></li>
+                      <li class="dropdown-divider"></li>
+                      <li><a class="dropdown-link dropdown-link--is-header">Header</a></li>
+                      <li><a class="dropdown-link">Separated link</a></li>
+                  </ul>
+              </lx-dropdown-menu>
+          </lx-dropdown>
+      </div>
+  </div>
+  
+  <lx-tabs>
+    <lx-tab icon="account-multiple">
+      
+    <hra-overflow>
+        <section class=" feed main" flex-container="row" flex-gutter="24" flex-wrap>
+            <div class="card">
+                <div class="p+">
+                    <strong class="fs-headline display-block" >{{ team.name }}</strong>
+                    <span class="fs-subhead tc-black-2 display-block">{{ team.slogan }}</span>
+                    <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.recrut' | translate }} : {{ team.recruit }}</span>
+                    <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.max' | translate }} : {{ team.max ? team.max : '500'}}</span>
+                    <div class="Member-owner">
+                        <a ui-sref="user/{{team.owner.id}}">
+                            <img class="inline-block" height="90" width="90" src="{{team.owner.avatar.src}}"/>
+                            <div class="inline-block" flex-container="row" style="vertical-align: top; margin-left: 8px;">
+                                <p class="tc-black-2 fs-headline">{{team.owner.firstname}} {{team.owner.name}} - <span class="fs-subhead tc-black-3 ">lvl {{team.owner.level}}<span></span></p>
+                                <span class="fs-subhead tc-black-1 display-block">{{ 'ui.team.owner' | translate }}</span>
+                                <span>xp : {{team.owner.xp}} / {{team.owner.nxp}}<span></span></span>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div style="right: 16px;bottom: 16px;position: absolute;">
-      <button class="btn btn--xl btn--blue btn--fab" lx-ripple><i class="mdi mdi-plus"></i></button>
-    </div>
-</section>
+            <div class="paragraph fs-body-1 mt+">
+                <ul class="list mt++ card">
+                    <li>
+                      <div style="margin: 16px;">
+                        <span class="fs-subhead tc-black-1 display-block">{{ 'ui.team.listmember' | translate }}</span>
+                        <div class="divider divider--dark"></div>
+                      </div>
+                    </li>
+                    <li class="list-row list-row--multi-line list-row--has-separator" ng-repeat="member in team.members" lx-ripple>
+                      <div class="list-row__primary">
+                          <div class="img-round" style="background-image: url({{member.avatar.src}})"/>
+                      </div>
+
+                      <div class="list-row__content">
+                          <span class="display-block">{{member.firstname}} {{member.name}}<i class="icon icon--xs icon--grey icon--flat mdi mdi-gender-{{member.gender}}"></i>
+                          </span>
+                          <span class="display-block fs-body-1 tc-black-2">{{member.age}} {{member.createdAt}}</span>
+                      </div>
+
+                      <div class="list-row__secondary">
+                        <div ng-if="team.me.status == 'owner' || !team.me">
+                            <button class="btn btn--m btn--red btn--icon" lx-ripple>
+                                <i class="mdi mdi-delete-variant" ng-click="deleteMember(member.id)"></i>
+                            </button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+            </div>
+            <div ng-if="team.me.status == 'owner' || !team.me" class="paragraph fs-body-1 mt+">
+                <ul class="list mt++ card">
+                    <li>
+                      <div style="margin: 16px;">
+                        <span class="fs-subhead tc-black-1 display-block">{{ 'ui.team.listpending' | translate }}</span>
+                        <div class="divider divider--dark"></div>
+                      </div>
+                    </li>
+                    <li ng-show="pending.length < 1">
+                      <div style="margin: 16px;">
+                        <span class="fs-subhead tc-black-1 display-block">{{ 'ui.team.nopending' | translate }}</span>
+                      </div>
+                    </li>
+                    <li class="list-row list-row--multi-line list-row--has-separator" ng-repeat="member in pending" lx-ripple>
+                      <div class="list-row__primary">
+                          <div class="img-round" style="background-image: url({{member.avatar.src}})"/>
+                      </div>
+
+                      <div class="list-row__content">
+                          <span class="display-block">{{member.firstname}} {{member.name}}<i class="icon icon--xs icon--grey icon--flat mdi mdi-gender-{{member.gender}}"></i>
+                          </span>
+                      </div>
+
+                      <div class="list-row__secondary">
+                        <div ng-if="team.me.status == 'owner' || !team.me">
+                            <button class="btn btn--m btn--red btn--fab" lx-ripple>
+                                <i class="mdi mdi-plus" ng-click="addMember(member.id)"></i>
+                            </button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+            </div>
+            <div style="right: 16px;bottom: 16px;position: fixed; z-index:5">
+              <button class="btn btn--xl btn--blue btn--fab" lx-ripple ui-sref="teams/edit({id : team.id})"><i class="mdi mdi-pencil"></i></button>
+            </div>
+        </section>
+        <hra-overflow>
+    </lx-tab>
+
+    <lx-tab icon="comment-text-outline" ui-sref="rankingall">
+      <ng-include src="'views/ranking-all.html'"></ng-include>
+    </lx-tab>
+
+    <lx-tab icon="chart-line" ui-sref="rankingall">
+      <ng-include src="'views/ranking-all.html'"></ng-include>
+    </lx-tab>
+  </lx-tabs>
+  
+</header>

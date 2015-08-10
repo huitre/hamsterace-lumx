@@ -8,8 +8,8 @@
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$scope', 'Sidebar', 'TeamService', '$translate',
-function ($scope, Sidebar, TeamService, $translate) {
+['$stateParams', '$scope', 'Sidebar', 'TeamService', '$translate',
+function ($stateParams, $scope, Sidebar, TeamService, $translate) {
   var self = this;
 
   $scope.title = 'ui.teams';
@@ -40,11 +40,15 @@ function ($scope, Sidebar, TeamService, $translate) {
     if (team) {
       $scope.user.hasteam = true;
       $scope.team = team;
-      console.log(team);
+      TeamService.getPendingUsers(team.id).then(function (users) {
+        $scope.pending = users;
+      })
     } else {
       TeamService.getTeams().then(function (teams) {
         $scope.foundTeams = teams
       });
     }
+    $scope.dataLoading = false;
   });
+
 }])

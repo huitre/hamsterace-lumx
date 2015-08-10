@@ -27,18 +27,11 @@ angular.module('Hamsterace.Services').factory('AuthenticationService',
       setLoggedIn: function(bool) {
         sdo.isLoggedIn = bool;
       },
-      setCredentials:function (username, password) {
-          var authdata = Base64.encode(username + ':' + password);
-
-          $rootScope.globals = {
-              currentUser: {
-                  username: username,
-                  authdata: authdata
-              }
-          };
+      setCredentials:function (request) {
+          $rootScope.User = request.data;
 
           //$http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
-          $cookieStore.put('globals', $rootScope.globals);
+          $cookieStore.put('user', $rootScope.User);
       },
       clearCredentials: function () {
           $rootScope.globals = {};
