@@ -27,6 +27,22 @@
                     <a ui-sref="ranking" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.ranking' | translate}}</a>
                 </div>
             </li>
+            <li class="list-row">
+                <div class="list-row__primary">
+                    <i class="icon icon--s icon--grey icon--flat mdi mdi-account-multiple"></i>
+                </div>
+                <div class="list-row__content">
+                    <a ui-sref="me/friends" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.myfriend' | translate}}</a>
+                </div>
+            </li>
+            <li class="list-row">
+                <div class="list-row__primary">
+                    <i class="icon icon--s icon--grey icon--flat mdi mdi-gamepad-variant"></i>
+                </div>
+                <div class="list-row__content">
+                    <a ui-sref="teams" class="sidebar-menu__link" ng-click="SideBar.toggleSidebar()">{{'ui.myteam' | translate}}</a>
+                </div>
+            </li>
         </ul>
     </div>
 </div>

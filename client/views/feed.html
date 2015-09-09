@@ -1,7 +1,7 @@
 <ng-include src="'views/appbar.html'"></ng-include>
 <ng-include src="'views/sidebar.html'"></ng-include>
-<div flex-container="row" flex-gutter="24" class="main top-- feed">
-  <div flex-item ng-repeat="post in feed" >
+<div class="main top-- feed" flex-container="row"  flex-wrap>
+  <div ng-repeat="post in feed" style="min-width: 300px;">
     <ul class="list mt++ card">
       <li class="list-row list-row--multi-line list-row--first-post">
         <div class="list-row__primary">
@@ -9,13 +9,13 @@
         </div>
 
         <div class="list-row__content">
-            <span class="fs-body-1 display-block">{{post.Person.PersonDetails[0].firstname}} {{post.Person.PersonDetails[0].name}}</span>
-            <span class="display-block">{{post.createdAt}}</span>
+            <span class="display-block">{{post.Person.PersonDetails[0].firstname}} {{post.Person.PersonDetails[0].name}}</span>
+            <span class="display-block fs-caption ">{{post.createdAt}}</span>
             <span class="display-block fs-body-1 tc-black-2">{{post.content.text}}</span>
-            <span ng-show="post.content.video.length">
-          		<embed-video>
-      				{{post.content.video}}
-      			</embed-video>
+            <span ng-if="post.content.video.length">
+          		<embed-video src="">
+      				  {{post.content.video}}
+      			  </embed-video>
           	</span>
         </div>
       </li>
@@ -26,7 +26,7 @@
 
           <div class="list-row__content">
               <span class="display-block">{{comments.Person.PersonDetails[0].firstname}} {{comments.Person.PersonDetails[0].name}}</span>
-              <span class="display-block">{{comments.createdAt}}</span>
+              <span class="display-block fs-caption">{{comments.createdAt}}</span>
               <span class="display-block fs-body-1 tc-black-2">{{comments.content.text}}</span>
               </span>
           </div>

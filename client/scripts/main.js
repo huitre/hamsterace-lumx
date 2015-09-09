@@ -7,24 +7,34 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         url: "/",
         templateUrl: 'views/home.html',
         controller: 'LoginController'
-    });
-
-    $stateProvider.state('me', {
+    }).state('me', {
         url: "/me",
         templateUrl: 'views/me.html',
         controller: 'MeController'
-    });
-
-    $stateProvider.state('feed', {
+    }).state('me/friends', {
+        url: "/me/friends",
+        templateUrl: 'views/friend.html',
+        controller: 'MyFriendController'
+    }).state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
         controller: 'FeedController'
-    });
-
-    $stateProvider.state('ranking', {
-        url: "/classement",
+    }).state('ranking', {
+        url: "/ranking",
         templateUrl: 'views/ranking.html',
         controller: 'RankingController'
+    }).state('user', {
+        url: "/user/:id",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams', {
+        url: "/teams",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams/edit', {
+        url: "/teams/edit/:id",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
     });
 
     // handle 403/401
@@ -34,7 +44,7 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         return {
            'responseError': function(rejection) {
                 if (rejection.status === 403 || rejection.status === 401) {
-                    $rootScope.globals.currentUser = null;
+                    $rootScope.User = null;
                     $location.path('/');
                 }
                 return $q.reject(rejection);
@@ -45,11 +55,11 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
-    $rootScope.globals = $cookieStore.get('globals') || {};
+    $rootScope.User = $cookieStore.get('user') || {};
     
     $rootScope.$on('$locationChangeStart', function (event, next, current) {
         // redirect to login page if not logged in
-        if ($location.path() !== '/' && !$rootScope.globals.currentUser) {
+        if ($location.path() !== '/' && !$rootScope.User) {
             $location.path('/');
         }
     });
@@ -69,6 +79,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
+    'ui.myfriend': 'My friends',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
     'ranking.sum': 'Total',
@@ -95,6 +106,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
+    'ui.myfriend': 'Mes amis',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
     'ranking.sum': 'Total',

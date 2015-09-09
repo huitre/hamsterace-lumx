@@ -10,6 +10,7 @@ angular.module('Hamsterace').directive('hraOverflow', ['$document',
       })
     }
     return {
+      scope : false,
       link: link
     }
   }

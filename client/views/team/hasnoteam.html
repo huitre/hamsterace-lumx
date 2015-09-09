@@ -1,0 +1,36 @@
+<section class="top-- feed main" flex-container="row" flex-gutter="24" flex-wrap>
+    <div flex-item>
+        <div class="card" ng-if="!team">
+            <div class="p+">
+                <strong class="fs-headline display-block">{{ 'ui.team.title.empty' | translate}}</strong>
+                <span class="fs-subhead tc-black-2 display-block">{{ 'ui.team.subtitle.empty' | translate}}</span>
+                <div class="paragraph fs-body-1 mt+">
+                    <p>
+                        {{ 'ui.team.message.empty' | translate}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" ng-repeat="team in foundTeams">
+        <div class="p+">
+            <strong class="fs-headline display-block" >{{ team.name }}</strong>
+            <span class="fs-subhead tc-black-2 display-block">{{ team.slogan}}</span>
+            <div class="paragraph fs-body-1 mt+">
+                <span>
+                    {{team.members.length}} {{ 'ui.team.members' | translate}}
+                </span>
+                <div>
+                    <a ng-repeat="member in team.members" href="user/{{member.id}}"><img  class="img-round inline-block {{member.status}}" height="30" width="30" src="{{member.avatar.src}}"/></a>
+                </div>
+            </div>
+            <div class="card__actions">
+                <button class="btn btn--m btn--orange btn--flat" lx-ripple ng-click="deleteMember(team.id)">{{ 'ui.team.subscription' | translate}}</button>
+            </div>
+        </div>
+    </div>
+    <div style="right: 16px;bottom: 16px;position: absolute;">
+      <button class="btn btn--xl btn--blue btn--fab" lx-ripple><i class="mdi mdi-plus">noteam</i></button>
+    </div>
+
+</section>

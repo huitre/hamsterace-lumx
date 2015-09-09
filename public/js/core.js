@@ -13201,14 +13201,43 @@ function (element, attrs) {
     }
 }]);
 angular.module('Hamsterace.Directives').directive(
-'embedVideo', [
-function (element, attrs) {
-    
-    return {
-        link: function (scope, element, attrs) {
-            element.innerHTML = '<video src="' + element.innerText + '"/>';
+'embedVideo', 
+[ '$timeout',
+function ($timeout) {
+  return {
+    restrict : 'E',
+    replace : true,
+    link : function (scope, element, attrs) {
+      var videoType = function (src) {
+          var replace = {
+              youtube : function (src, html) {
+                return html.replace('{{src}}', src)
+              },
+              html5 : function (src, html) {
+                return html.replace('{{src}}', src)
+              }
+            }, type = [
+                { rx : /.*youtube*/, type : 'youtube' },
+                { rx : /.*vimeo*/, type : 'vimeo' },
+                { rx : /.*(mp4|ogg)*/, type : 'html5' }
+              ], code = [
+                '<iframe width="100%" src="{{src}}" frameborder="0" allowfullscreen></iframe>',
+                '<iframe src="{{src}}" width="100%" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+                '<video src="{{src}}" style="width: 100%" controls></video>'
+              ];
+
+          for (var i in type) {
+            if (src.match(type[i].rx)) {
+              return replace[type[i].type](src, code[i]);
+            }
+          }
+          return '<video src="' + src + '" style="width: 100%" controls></video>';
         }
+      $timeout(function () {
+        element[0].innerHTML = videoType(element[0].innerText);
+      })
     }
+  }
 }]);
 'use strict';
 
@@ -13222,6 +13251,7 @@ angular.module('Hamsterace').directive('hraOverflow', ['$document',
       })
     }
     return {
+      scope : false,
       link: link
     }
   }
@@ -13279,18 +13309,11 @@ angular.module('Hamsterace.Services').factory('AuthenticationService',
       setLoggedIn: function(bool) {
         sdo.isLoggedIn = bool;
       },
-      setCredentials:function (username, password) {
-          var authdata = Base64.encode(username + ':' + password);
-
-          $rootScope.globals = {
-              currentUser: {
-                  username: username,
-                  authdata: authdata
-              }
-          };
+      setCredentials:function (request) {
+          $rootScope.User = request.data;
 
           //$http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
-          $cookieStore.put('globals', $rootScope.globals);
+          $cookieStore.put('user', $rootScope.User);
       },
       clearCredentials: function () {
           $rootScope.globals = {};
@@ -13404,7 +13427,7 @@ function ($cookieStore, $http, $rootScope) {
 * @Author: huitre
 * @Date:   2015-06-12 18:30:03
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-26 11:11:13
+* @Last Modified time: 2015-07-05 20:04:25
 */
 
 'use strict';
@@ -13415,20 +13438,49 @@ function ($http, $rootScope, $q) {
   var _urls = {
     me: Config.api.url + 'me/',
     friends: Config.api.url + 'me/friends',
-    stats: Config.api.url + 'me/stats'
+    stats: Config.api.url + 'me/stats',
+    waiting: Config.api.url + 'me/request',
+    accept: Config.api.url + 'me/accept',
+    refuse: Config.api.url + 'me/refuse',
+    remove: Config.api.url + 'me/remove'
+
   }, self = {}, cStats = {data : [], time : new Date()};  
 
-  self.getBasicProfil = function (callback) {
+  self.getBasicProfil = function () {
     return $http.get(_urls.me).then(function (profil) {
-      return profil.data.PersonDetails[0];
+      return profil.data.PersonDetail;
     })
   }
 
-  self.getFriends = function (callback) {
+  self.getFriends = function () {
     return $http.get(_urls.friends).then(function (friends) {
       return friends.data;
-    }
-)  }
+    })
+  }
+
+  self.getWaitingFriends = function () {
+    return $http.get(_urls.waiting).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.acceptFriend = function (id) {
+    return $http.post(_urls.accept + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.deleteFriend = function (id) {
+    return $http.post(_urls.remove + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
+
+  self.refuseFriend = function (id) {
+    return $http.post(_urls.refuse + '/' + id).then(function (friends) {
+      return friends.data;
+    }) 
+  }
 
   self.getStats = function (type, value, $scope) {
     var url = _urls.stats;
@@ -13578,6 +13630,109 @@ function ($translate, $http, $rootScope) {
   }
   return self;
 }]);
+/* 
+* @Author: huitre
+* @Date:   2015-06-12 18:30:03
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-07-05 20:04:25
+*/
+
+'use strict';
+
+angular.module('Hamsterace.Services').factory('TeamService',
+['$http', '$rootScope', '$q',
+function ($http, $rootScope, $q) {
+  var url = Config.api.url + 'team/';
+  var _urls = {
+    exists: url + 'by',
+    request: url + ':id/request',
+    teams: url + '',
+    mine: url + 'mine',
+    rm: url + 'team/:id/members/remove',
+    ok: url + 'team/:id/request/accept',
+    wall: url + 'team/:id/wall',
+    badges: url + 'team/:id/badges',
+    stats: url + 'team/:id/stats'
+  }, self = {}, cStats = {data : [], time : new Date()};  
+
+  self.get = function (url, data) {
+    return $http.get(url, data).then(function (team) {
+      if (team.hasOwnProperty('data'))
+        return team.data;
+      return [];
+    })
+  }
+
+  self.getTeamByName = function (name) {
+    return self.get(_urls.exists + '/' + name);
+  };
+
+	self.requestInvitation = function (teamId) {
+    return $http.post(_urls.request.replace(':id', teamId)).then(function (team) {
+    	if (team.hasOwnProperty('data'))
+      	return team.data;
+      return [];
+    })
+  };
+
+  self.getPendingUsers = function (teamId) {
+    return self.get(_urls.request.replace(':id', teamId));
+  }
+
+  self.getTeams = function (offset) {
+    return self.get(_urls.teams);
+  }
+
+  self.rm = function (teamId, memberID) {
+    return $http.post(_urls.request.replace(':id', teamId), {id: memberID});
+  }
+
+  self.getMine = function (offset) {
+    var me = $rootScope.User;
+    return self.get(_urls.mine).then(function (team) {
+      var findIndex = function (members) {
+        for (var i = members.length - 1; i; --i) {
+          if (members[i].id == me.id)
+            return i;
+          return -1;
+        }
+      }, index = findIndex(team.members);
+      team.owner = team.members.shift();
+      team.me = null;
+      if (index > -1 && team.owner.id != me.id) {
+        team.me = team.members.splice(index, 1);
+      }
+      return team;
+    })
+  }
+
+  return self;
+}]);
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:58:10
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-27 15:02:46
+*/
+
+'use strict';
+
+angular.module('Hamsterace.Services').factory('UserService',
+['$http', '$rootScope', '$q',
+function ($http, $rootScope, $q) {
+  var _urls = {
+    index: Config.api.url + 'user/$id',
+    friends: Config.api.url + 'user/$id/friends',
+    followers: Config.api.url + 'user/$id/followers',
+    badges: Config.api.url + 'user/$id/badges',
+    wall: Config.api.url + 'user/$id/wall',
+    request: Config.api.url + 'user/request',
+    find: Config.api.url + 'user/find/$name'
+  }, self = {};  
+
+  
+  return self;
+}]);
 angular.module('Hamsterace').controller('FeedController',
 ['$scope', '$rootScope', '$location', 'Sidebar', 'FeedService', '$http', '$timeout',
 function ($scope, $rootScope, $location, Sidebar, FeedService, $http, $timeout) {
@@ -13659,7 +13814,7 @@ angular.module('Hamsterace').controller('LoginController',
 * @Author: huitre
 * @Date:   2015-05-10 12:33:09
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-06-26 18:42:20
+* @Last Modified time: 2015-06-27 14:37:11
 */
 
 'use strict';
@@ -13783,6 +13938,91 @@ function ($scope, Sidebar, MeService, StatsService) {
 }])
 /* 
 * @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-07-05 19:59:40
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('MyFriendController',
+['$scope', 'Sidebar', 'MeService', 'UserService', 'LxNotificationService', '$translate',
+function ($scope, Sidebar, MeService, UserService, LxNotificationService, $translate) {
+  var self = this;
+
+  $scope.title = 'ui.myfriend';
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+  $scope.$watch('search.terms', function(newValue, oldValue) {
+    debugger;
+  });
+
+  (function () {
+    MeService.getFriends().then(function (data) {
+      $scope.friends = data;
+    })
+    MeService.getWaitingFriends().then(function (data) {
+      $scope.waiting = data;
+    });
+  })()
+
+  this.filterWaiting = function (id) {
+    $scope.waiting = $scope.waiting.filter(function (el, i) {
+      if (el.id != id) {
+        return true;
+      }
+    })
+  }
+
+  $scope.deleteFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.deleteFriend(id).then(function (data) {
+            $scope.friends = $scope.friends.filter(function (el, i) {
+              if (el.id != id) {
+                return true;
+              }
+            })
+          })
+        }
+      }
+    );
+  }
+
+  $scope.acceptFriend = function (id) {
+    MeService.acceptFriend(id).then(function (data) {
+      var obj = data.pop(),
+          idx = 0;
+
+      self.filterWaiting(id);
+      $scope.friends.push(obj);
+    })
+  }
+
+  $scope.refuseFriend = function (id) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer) {
+          MeService.refuseFriend(id).then(function (data) {
+            self.filterWaiting(data.id);
+          })
+        }
+      }
+    );
+  }
+
+}])
+/* 
+* @Author: huitre
 * @Date:   2015-05-10 19:41:04
 * @Last Modified by:   huitre
 * @Last Modified time: 2015-06-13 10:54:06
@@ -13838,6 +14078,97 @@ function ($scope, $rootScope, $location, $translate, Sidebar, RankingService, or
 
 
 }])
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-07-05 19:59:40
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('TeamsController',
+['$stateParams', '$scope', 'Sidebar', 'TeamService', '$translate', 'LxNotificationService',
+function ($stateParams, $scope, Sidebar, TeamService, $translate, LxNotificationService) {
+  var self = this;
+
+  $scope.title = 'ui.teams';
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+  $scope.request = {};
+  $scope.search = { term: '' };
+  $scope.user = {};
+
+  $scope.$watch('search.term', function(newValue, oldValue) {
+    if (newValue != oldValue && newValue)
+      TeamService.getTeamByName(newValue).then(function (team) {
+        $scope.foundTeams = team;
+      })
+    }, true);
+  
+  $scope.makeRequest = function (teamId) {
+    if (teamId) {
+      TeamService.requestInvitation(teamId).then(function (r) {
+        if (r)
+          $scope.request[teamId] = true
+;      })
+    }
+  }
+
+  $scope.deleteMember = function (memberId) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer && $scope.team)
+          TeamService.rm($scope.team.id, memberId).then(function () {
+            debugger;
+          })
+      }
+    )
+  }
+  
+  TeamService.getMine().then(function (team) {
+    if (team) {
+      $scope.user.hasteam = true;
+      $scope.team = team;
+      TeamService.getPendingUsers(team.id).then(function (users) {
+        $scope.pending = users;
+      })
+    } else {
+      TeamService.getTeams().then(function (teams) {
+        $scope.foundTeams = teams
+      });
+    }
+    $scope.dataLoading = false;
+  });
+
+}])
+/* 
+* @Author: huitre
+* @Date:   2015-06-27 14:38:20
+* @Last Modified by:   huitre
+* @Last Modified time: 2015-06-27 15:43:11
+*/
+
+'use strict';
+ 
+angular.module('Hamsterace').controller('UserController',
+['$rootScope', '$scope', 'Sidebar', 'MeService', 'UserService',
+function ($rootScope, $scope, Sidebar, MeService, UserService) {
+  var self = this;
+
+  // main template dependency
+  $scope.SideBar = Sidebar;
+  $scope.dataLoading = true;
+
+  $scope.friends;
+
+  console.log($scope)
+
+}])
 angular.module('Hamsterace').config( 
 function($httpProvider, $stateProvider, $urlRouterProvider) {
     
@@ -13847,24 +14178,34 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         url: "/",
         templateUrl: 'views/home.html',
         controller: 'LoginController'
-    });
-
-    $stateProvider.state('me', {
+    }).state('me', {
         url: "/me",
         templateUrl: 'views/me.html',
         controller: 'MeController'
-    });
-
-    $stateProvider.state('feed', {
+    }).state('me/friends', {
+        url: "/me/friends",
+        templateUrl: 'views/friend.html',
+        controller: 'MyFriendController'
+    }).state('feed', {
         url: "/feed",
         templateUrl: 'views/feed.html',
         controller: 'FeedController'
-    });
-
-    $stateProvider.state('ranking', {
-        url: "/classement",
+    }).state('ranking', {
+        url: "/ranking",
         templateUrl: 'views/ranking.html',
         controller: 'RankingController'
+    }).state('user', {
+        url: "/user/:id",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams', {
+        url: "/teams",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
+    }).state('teams/edit', {
+        url: "/teams/edit/:id",
+        templateUrl: 'views/teams.html',
+        controller: 'TeamsController'
     });
 
     // handle 403/401
@@ -13874,7 +14215,7 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
         return {
            'responseError': function(rejection) {
                 if (rejection.status === 403 || rejection.status === 401) {
-                    $rootScope.globals.currentUser = null;
+                    $rootScope.User = null;
                     $location.path('/');
                 }
                 return $q.reject(rejection);
@@ -13885,11 +14226,11 @@ function($httpProvider, $stateProvider, $urlRouterProvider) {
 }).run(['$rootScope', '$location', '$cookieStore', '$http',
   function ($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
-    $rootScope.globals = $cookieStore.get('globals') || {};
+    $rootScope.User = $cookieStore.get('user') || {};
     
     $rootScope.$on('$locationChangeStart', function (event, next, current) {
         // redirect to login page if not logged in
-        if ($location.path() !== '/' && !$rootScope.globals.currentUser) {
+        if ($location.path() !== '/' && !$rootScope.User) {
             $location.path('/');
         }
     });
@@ -13909,6 +14250,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'News feed',
     'ui.feed.text.reply': 'Comment',
+    'ui.myfriend': 'My friends',
     'appbar.ranking': 'Ranking',
     'appbar.feed': 'Feed',
     'ranking.sum': 'Total',
@@ -13935,6 +14277,7 @@ angular.module('Hamsterace').config(['$translateProvider', function ($translateP
     'ui.profil' : 'Mon profil',
     'ui.feed': 'Vos actus !',
     'ui.feed.text.reply': 'Commentez...',
+    'ui.myfriend': 'Mes amis',
     'appbar.ranking': 'Classements',
     'appbar.feed': 'Actus',
     'ranking.sum': 'Total',

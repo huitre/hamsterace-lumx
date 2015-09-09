@@ -46,7 +46,7 @@
   }
   #form-wrapper {
     position: relative;
-    width: 19%;
+    width: 24%;
     padding: 2em;
     margin: 13em auto auto;
     min-width: 21em;
@@ -97,5 +97,37 @@
 
   #home #img-header {
     top:15em;
+  }
+}
+
+
+@media screen and (max-width: 6in) {
+  section#content section {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 6in) {
+  body {
+    overflow-x: hidden;
+  }
+  #home #form-wrapper {
+    width: 65%
+  }
+
+  #home #img-header {
+    width: 16%;
+  }
+
+  svg#title {
+    width: 165%;
+    left: -32.5%;
+    top: -0%;
+  }
+}
+
+@media screen and (max-width: 10.1in) {
+  #home #form-wrapper {
+    width: 36%
   }
 }

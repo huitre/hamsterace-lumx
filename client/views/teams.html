@@ -1,0 +1,4 @@
+<div ng-if="!dataLoading">
+	<ng-include ng-if="user.hasteam" src="'views/team/hasteam.html'"></ng-include>
+	<ng-include ng-if="!user.hasteam"src="'views/team/hasnoteam.html'"></ng-include>
+</div>
