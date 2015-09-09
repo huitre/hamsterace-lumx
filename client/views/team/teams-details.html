@@ -16,7 +16,7 @@
     </div>
     <div class="card" ng-repeat="team in foundTeams">
         <div class="p+">
-            <strong class="fs-headline display-block" ng-click="alert('tamere')">{{ team.name }}</strong>
+            <strong class="fs-headline display-block">{{ team.name }}</strong>
             <span class="fs-subhead tc-black-2 display-block">{{ team.slogan}}</span>
             <div class="paragraph fs-body-1 mt+">
                 <span>
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="card__actions">
-                <button class="btn btn--m btn--orange btn--flat" ngClick="toto.tamere(5)">{{ 'ui.team.subscription' | translate}}</button>
+                <button class="btn btn--m btn--orange btn--flat">{{ 'ui.team.subscription' | translate}}</button>
             </div>
         </div>
     </div>

@@ -8,8 +8,8 @@
 'use strict';
  
 angular.module('Hamsterace').controller('TeamsController',
-['$stateParams', '$scope', 'Sidebar', 'TeamService', '$translate',
-function ($stateParams, $scope, Sidebar, TeamService, $translate) {
+['$stateParams', '$scope', 'Sidebar', 'TeamService', '$translate', 'LxNotificationService',
+function ($stateParams, $scope, Sidebar, TeamService, $translate, LxNotificationService) {
   var self = this;
 
   $scope.title = 'ui.teams';
@@ -31,9 +31,23 @@ function ($stateParams, $scope, Sidebar, TeamService, $translate) {
     if (teamId) {
       TeamService.requestInvitation(teamId).then(function (r) {
         if (r)
-          $scope.request[teamId] = true;
-      })
+          $scope.request[teamId] = true
+;      })
     }
+  }
+
+  $scope.deleteMember = function (memberId) {
+    LxNotificationService.confirm(
+      '',
+      $translate.instant('ui.confirm.delete'),
+      { cancel:$translate.instant('ui.disagree'), ok: $translate.instant('ui.agree') }, 
+      function(answer) {
+        if (answer && $scope.team)
+          TeamService.rm($scope.team.id, memberId).then(function () {
+            debugger;
+          })
+      }
+    )
   }
   
   TeamService.getMine().then(function (team) {

@@ -51,6 +51,10 @@ function ($http, $rootScope, $q) {
     return self.get(_urls.teams);
   }
 
+  self.rm = function (teamId, memberID) {
+    return $http.post(_urls.request.replace(':id', teamId), {id: memberID});
+  }
+
   self.getMine = function (offset) {
     var me = $rootScope.User;
     return self.get(_urls.mine).then(function (team) {
